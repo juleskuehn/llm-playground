@@ -60,9 +60,8 @@ AUTHENTICATION_BACKENDS = (
 LOGIN_URL = "phac_only_login"
 
 LOGIN_REDIRECT_URL = ""
-MAGICLINK_LOGIN_TEMPLATE_NAME = "magiclink/login.html"
-MAGICLINK_LOGIN_SENT_TEMPLATE_NAME = "magiclink/login_sent.html"
-MAGICLINK_LOGIN_FAILED_TEMPLATE_NAME = "magiclink/login_failed.html"
+MAGICLINK_LOGIN_SENT_TEMPLATE_NAME = "login_link_sent.jinja"
+MAGICLINK_LOGIN_FAILED_TEMPLATE_NAME = "login_failed.jinja"
 MAGICLINK_REQUIRE_SIGNUP = False
 
 if DEBUG:

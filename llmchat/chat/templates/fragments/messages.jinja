@@ -1,0 +1,12 @@
+{% for message in messages %}
+  {% include "fragments/single_message.jinja" %}
+{% endfor %}
+<script>
+// Scroll to the bottom of the messages
+(function () {
+  const messages = document.getElementById("messages-container");
+  if (messages) {
+    messages.scrollTop = messages.scrollHeight;
+  }
+})();
+</script>

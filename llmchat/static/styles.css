@@ -978,7 +978,7 @@ body.highlight-invalid div.phac_aspc_form_autocomplete:has(input:invalid) {
   outline: solid 1px var(--bs-danger);
 }
 
-#toggle-notes {
+#toggle-chat {
   position: fixed;
   top: 0;
   right: 0;
@@ -993,31 +993,27 @@ body.highlight-invalid div.phac_aspc_form_autocomplete:has(input:invalid) {
   border-top-width: 0;
 }
 
-#notes-sidebar {
-  box-shadow: rgba(0, 0, 0, 0.1) 0 0 10px;
-}
-
-#notes-sidebar textarea {
+#chat-container textarea {
   height: 6.5rem;
   width: 100%;
   resize: none;
 }
 
-#comments-container {
+#messages-container {
   height: calc(100vh - 12.75rem);
   overflow-y: auto;
   padding-bottom: 0.25rem;
   overflow-x: hidden;
 }
 
-#notes-sidebar .add-comment-container {
+#chat-container .add-message-container {
   position: absolute;
   bottom: 0.25rem;
   width: calc(100% - 1rem);
   /* box-shadow: rgba(255,255,255,1) -7px -14px 10px; */
 }
 
-#notes-sidebar .add-comment-divider {
+#chat-container .add-message-divider {
   position: absolute;
   width: 100%;
   background: white;
@@ -1027,7 +1023,7 @@ body.highlight-invalid div.phac_aspc_form_autocomplete:has(input:invalid) {
   /* box-shadow: white 0 0 5px; */
 }
 
-.comment-blob {
+.message-blob {
   background: #fff3cd;
   border-radius: 5px;
   padding: 0.5rem 0.75rem 0.5rem 0.75rem;
@@ -1035,42 +1031,42 @@ body.highlight-invalid div.phac_aspc_form_autocomplete:has(input:invalid) {
   border: solid 1px #ffecb5;
 }
 
-.comment-blob .dropdown {
+.message-blob .dropdown {
   opacity: 0;
   height: 0;
   position: relative;
   top: -1.75rem;
 }
 
-.comment-outer:hover .dropdown,
-.comment-outer .dropdown:focus-within {
+.message-outer:hover .dropdown,
+.message-outer .dropdown:focus-within {
   opacity: 1;
   text-align: right;
 }
 
-.comment-actions .dropdown>button,
-.comment-actions .dropdown>button:hover {
+.message-actions .dropdown>button,
+.message-actions .dropdown>button:hover {
   background: #fff;
   box-shadow: rgba(0, 0, 0, 0.1) 2px 3px 5px;
   padding: 0 5px;
 }
 
-#notes-container .offcanvas-body {
+#chat-container .offcanvas-body {
   padding-left: 0.5rem;
   padding-right: 0.5rem;
   padding-top: 0;
   overflow-x: hidden;
 }
 
-#notes-container .comment-meta {
+#chat-container .message-meta {
   font-size: smaller;
 }
 
-#notes-container .comment-text {
+#chat-container .message-text {
   white-space: pre-wrap;
 }
 
-#notes-saved-alert {
+#chat-saved-alert {
   font-size: 1rem;
   font-weight: normal;
   position: absolute;
@@ -1080,7 +1076,7 @@ body.highlight-invalid div.phac_aspc_form_autocomplete:has(input:invalid) {
   opacity: 1;
 }
 
-#notes-saved-alert.fade-out {
+#chat-saved-alert.fade-out {
   opacity: 0;
 }
 

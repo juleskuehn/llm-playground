@@ -1,9 +1,9 @@
-<html>
-  <head>
-    <title>Django-Jinja Test</title>
-  </head>
-  <body>
-    <h1>Hello</h1>
-    {{ 2**2 }}
-  </body>
-</html>
+{% extends 'base.jinja' %}
+{% block content %}
+  <div class="container">
+    <h1>Index</h1>
+    <ul>
+      <li><a href="{{ url('chat') }}">Chat</a></li>
+    </ul>
+  </div>
+{% endblock content %}

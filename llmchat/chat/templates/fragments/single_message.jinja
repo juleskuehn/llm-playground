@@ -1,0 +1,19 @@
+{% if message.message != "" %}
+  <div class="message-outer" id="message-{{ message.id }}">
+    <div class="message-meta text-secondary">
+      <span class="message-author me-1">
+        {% if message.is_user %}
+          {{ message.author.name }}
+        {% else %}
+          LLM
+        {% endif %}
+      </span>
+      <span class="message-date">
+        {{ message.timestamp.strftime("%Y-%m-%d %H:%M") }}
+      </span>
+    </div>
+    <div class="message-blob">
+      <div class="message-text">{{ message.message }}</div>
+    </div>
+  </div>
+{% endif %}
