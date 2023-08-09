@@ -1,0 +1,1179 @@
+:root {
+  --action: #f7b2b2;
+  --monitoring: #aae794;
+  --investigation: #f9f04d;
+  --propose-remove: #ecdff5;
+  --cira-dark-red: #ae0000;
+  --cira-yellow: #ffd966;
+  --cira-green: #c5dfb4;
+  --cira-gray: #d9d9d9;
+  --cira-light-blue: #d9e0f1;
+  --cira-dark-blue: #22528d;
+  --cira-medium-blue: #8ea9db;
+}
+
+body {
+  /* min-height: 45rem;
+  padding-top: 4.5rem;
+  margin: 0 2%; */
+  min-height: 100vh;
+  display: flex;
+  position: relative;
+  flex-direction: column;
+  font-family: "Twemoji Country Flags", "system-ui";
+  padding-bottom: 5rem !important;
+}
+
+footer {
+  position: absolute;
+  bottom: 3.5rem;
+  width: 100%;
+  height: 2rem;
+}
+
+.navbar .btn {
+  margin: 0 5px 0 5px;
+}
+
+.navbar h1 {
+  color: white;
+  margin: 0;
+  margin-right: 5px;
+}
+
+.navbar a.dropdown-item,
+.navbar a.dropdown-toggle {
+  text-decoration: none;
+}
+
+#top-nav {
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+
+#top-nav ul.bold-links .nav-link {
+  font-weight: 500;
+}
+
+#top-nav ul.bold-links .nav-link:not(:hover):not(.active) {
+  color: var(--bs-white);
+}
+
+#top-nav .nav-link.active {
+  border-bottom: solid 2px var(--bs-gray);
+  margin-bottom: -2px;
+}
+
+/* Fix uneven header height when logged in vs. logged out */
+@media (min-width: 768px) {
+  .navbar-expand-md .navbar-toggler {
+    visibility: hidden;
+    display: block;
+  }
+}
+
+#header-short {
+  display: none;
+}
+
+/* Fix header text being too long on smallest mobile views */
+@media (max-width: 600px) {
+  #header-long {
+    display: none;
+  }
+
+  #header-short {
+    display: block;
+    font-size: 1.8rem;
+  }
+}
+
+h5 a.help {
+  color: black;
+  zoom: 0.8;
+  cursor: pointer;
+  margin-left: 5px;
+}
+
+#threat-title-container input {
+  font-size: 1.6rem;
+}
+
+/* safe_edits wraps submit button in a div, but we want it styled inline */
+div.threat-submit-buttons div {
+  display: inline;
+}
+
+.highlighted-row {
+  background-color: #fffcc4;
+}
+
+.assessment-span {
+  display: inline-block;
+  width: 100%;
+  border-left: solid 1.3rem #dddddd;
+  padding-left: 0.5rem;
+  height: 1.3rem;
+  margin-top: 0;
+  line-height: 1.3rem;
+}
+
+.assessment-val-monitoring {
+  border-color: var(--monitoring);
+}
+
+.assessment-val-action {
+  border-color: var(--action);
+}
+
+.assessment-val-investigation {
+  border-color: var(--investigation);
+}
+
+.assessment-val-propose_remove {
+  border-color: var(--propose-remove);
+}
+
+.assessment-val-removed {
+  border: none;
+  padding: 0;
+}
+
+.btn-link.help {
+  --bs-btn-color: #000000;
+}
+
+.btn-link.phase-help {
+  --bs-btn-color: --var(bs-text);
+  margin-top: -24px;
+  margin-bottom: -20px;
+  padding-left: 0px;
+  padding-right: 1px;
+}
+
+#outcome_display span {
+  display: inline-block;
+  width: auto;
+  margin-left: 5px;
+}
+
+#form-error-alert {
+  display: none;
+}
+
+#form-error-alert.show {
+  display: block;
+}
+
+label.required::after {
+  content: '*';
+  color: #d33342;
+}
+
+form.read-only label.required::after,
+label.sr-only.required::after {
+  display: none;
+}
+
+/* fixes browser validation error messages not popping up */
+/* https://github.com/twbs/bootstrap/issues/33757 */
+:root {
+  scroll-behavior: auto !important;
+}
+
+/* highlight the record in the table that has just been changed */
+tr.changed-record {
+  outline: solid 5px #badbcc;
+  outline-offset: -1px;
+  z-index: 2;
+  position: relative;
+  transition: 0.2s outline;
+}
+
+ul.dropdown-menu.show {
+  z-index: 3;
+}
+
+.card-header button.help {
+  margin-bottom: -15px;
+  position: relative;
+  top: -5px;
+  margin-top: -10px;
+}
+
+/* override default DataTables styling for expanding child rows */
+table.dataTable.dtr-column>tbody>tr>td.dtr-control:before,
+table.dataTable.dtr-column>tbody>tr>th.dtr-control:before,
+table.dataTable.dtr-column>tbody>tr>td.control:before,
+table.dataTable.dtr-column>tbody>tr>th.control:before {
+  top: 0;
+  margin-top: 13px;
+  background-color: #eee;
+  color: #000;
+  font-weight: bold;
+  border: 1px solid #aaa;
+  box-shadow: none;
+  height: 0.9em;
+  width: 0.9em;
+}
+
+/* override default DataTables styling for collapsing child rows */
+table.dataTable.dtr-column.collapsed>tbody>tr.parent>td.dtr-control:before,
+table.dataTable.dtr-column.collapsed>tbody>tr.parent>th.dtr-control:before {
+  background-color: #eee;
+}
+
+/* more DataTables overrides */
+@media screen and (max-width: 640px) {
+
+  .dataTables_wrapper .dataTables_length,
+  .dataTables_wrapper .dataTables_filter {
+    float: none;
+    text-align: right;
+  }
+}
+
+table#threats,
+table#users {
+  width: 100% !important;
+}
+
+div#threats_filter,
+div#users_filter {
+  margin-top: -45px;
+}
+
+#all-threats #threats_filter {
+  margin-top: 0;
+}
+
+@media screen and (max-width: 520px) {
+  div#threats_filter {
+    display: none;
+  }
+}
+
+ul.dtr-details {
+  width: 100%;
+}
+
+span.dtr-data span.assessment-span {
+  width: auto;
+}
+
+span.dtr-title {
+  width: 146px;
+}
+
+/* History modal needs to be bigger */
+@media (min-width: 576px) {
+  .modal-xl .modal-dialog {
+    width: 90%;
+    max-width: 1200px;
+  }
+}
+
+label.confirm_checkbox_label {
+  display: inline-block;
+}
+
+div.phac_aspc_form_autocomplete div.results.show {
+  margin-top: calc(.375rem - 1px);
+  margin-left: calc(-0.75rem - 1px);
+}
+
+div.phac_aspc_form_autocomplete_focus_ring {
+  padding: 0;
+}
+
+div.phac_aspc_form_autocomplete_focus_ring.active {
+  outline: 0;
+  box-shadow: 0 0 0 0.25rem rgb(13 110 253 / 25%);
+  border: 0;
+  /* border: 1px solid #86b7fe; */
+  border-radius: 0.375rem;
+  transition: box-shadow .15s ease-in-out;
+  padding: 0;
+}
+
+div.phac_aspc_form_autocomplete_focus_ring.active>div {
+  color: initial;
+  background-color: initial;
+}
+
+div.phac_aspc_form_autocomplete .results .item {
+  padding: 1px 1rem 1px 1rem;
+}
+
+/* #threat-form div.row div.col-auto button {
+  width: 2.25rem;
+} */
+
+/* Hover effect for icons inside buttons */
+
+.btn .bi.d-parent-hover {
+  display: none;
+}
+
+.btn:hover .bi.d-parent-hover,
+.btn:focus .bi.d-parent-hover {
+  display: inline;
+}
+
+.btn:hover .bi.d-parent-no-hover,
+.btn:focus .bi.d-parent-no-hover {
+  display: none;
+}
+
+footer a,
+footer p {
+  color: rgba(255, 255, 255, 0.55) !important;
+  transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out;
+}
+
+footer:not(#landing-footer) a:hover,
+footer:not(#landing-footer) a:focus {
+  color: rgba(255, 255, 255, 0.75) !important;
+}
+
+
+
+.nav-tabs .nav-item.show .nav-link,
+.nav-tabs .nav-link.active {
+  background: white;
+  color: var(--bs-table-color);
+  border-color: rgba(0, 0, 0, 0.3);
+  border-bottom: solid 2px white;
+  margin-bottom: -2px;
+  z-index: 1;
+}
+
+div.tab-content {
+  border-top: solid rgba(0, 0, 0, 0.3) 1px;
+  /* border: solid rgba(0,0,0,0.3) 1px; */
+  /* border-radius: .375rem; */
+  margin-left: -1rem;
+  margin-right: -1rem;
+}
+
+ul.nav-tabs {
+  border-bottom-color: white;
+}
+
+table.dataTable tr.dtrg-group th {
+  background-color: var(--bs-gray-100) !important;
+}
+
+ul.dash {
+  list-style-type: "-";
+  text-indent: 0.5rem;
+}
+
+.nav-header {
+  margin: 0;
+  color: white;
+  font-size: 1.75em;
+}
+
+h2.card-header {
+  font-size: 1.25em;
+}
+
+#sub-header {
+  width: 100%;
+  margin-top: -1rem;
+  overflow: hidden;
+}
+
+#sub-header>.row,
+#sub-header>.header-row {
+  background: var(--bs-gray-100);
+  border-bottom: solid 1px rgba(0, 0, 0, 0.3);
+}
+
+#sub-header li.list-group-item-secondary {
+  background: none;
+}
+
+#phase-intro {
+  display: inline-block;
+  margin-bottom: 0px;
+  text-align: center;
+}
+
+h1 abbr {
+  text-decoration: none !important;
+  border-bottom: none;
+}
+
+tr .action {
+  background-color: var(--action);
+  vertical-align: middle;
+}
+
+tr .investigation {
+  background-color: var(--investigation);
+  vertical-align: middle;
+}
+
+tr .monitoring {
+  background-color: var(--monitoring);
+  vertical-align: middle;
+}
+
+tr .propose_remove {
+  background-color: var(--propose-remove);
+  vertical-align: middle;
+}
+
+.text-remove {
+  color: #737373
+}
+
+table.threat-summary th,
+table.threat-summary td {
+  padding: 10px;
+  min-width: 110px;
+}
+
+table.threat-summary {
+  width: calc(min(800px, 100%));
+}
+
+#threat-summary td {
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+.title-blue {
+  background: rgba(35, 82, 140, 0.9);
+  color: white;
+}
+
+.phase-explainer-heading {
+  font-size: 1.25rem;
+}
+
+table.dataTable.no-footer {
+  border-bottom: none;
+  border-color: var(--bs-border-color);
+}
+
+.report-table-title {
+  display: flex;
+  justify-content: center;
+  align-content: center;
+}
+
+table.history-table th {
+  white-space: nowrap;
+}
+
+#threat-reports.show-all tr.published,
+.history-table tr.published {
+  border-left: solid 3px var(--bs-border-color);
+}
+
+#threat-reports tr.current {
+  font-weight: 500;
+}
+
+th.assessment-count-col {
+  width: 30px;
+}
+
+table.threat-reports span.assessment-span {
+  display: inline;
+  padding-left: 0;
+}
+
+table:not(.show-all) .toggle-visibility {
+  display: none;
+}
+
+table span.stacked-bar-container span {
+  border-right: solid black;
+  border-right-width: 1px !important;
+}
+
+table span.stacked-bar-container:not(:empty)::before {
+  border-left: solid black 1px;
+  display: inline;
+  content: "";
+}
+
+table span.stacked-bar-container {
+  border: solid black 1px;
+  border-left: none;
+  border-right: none;
+  margin-right: 0.5rem;
+}
+
+table span.total {
+  visibility: hidden;
+}
+
+.middle-header {
+  text-align: center;
+}
+
+.middle-header-second {
+  text-align: center;
+  vertical-align: middle;
+}
+
+#detailed-summary-table {
+  /* padding-left: 3rem; */
+  /* padding-right: 3rem; */
+  width: calc(100vw - 5rem);
+  position: relative;
+  left: calc(max(-50vw, -1000px) + 50% + 2.5rem);
+  max-width: 2000px;
+}
+
+#detailed-summary-table li.list-inline-item {
+  display: inline;
+}
+
+ul.list-inline li.list-inline-item:not(:last-child) {
+  margin-right: 0;
+}
+
+ul.list-inline li.list-inline-item:not(:last-child):after {
+  content: ";";
+}
+
+.questions-column {
+  background: #fffbe2 !important;
+}
+
+.unindent-lists ul {
+  padding-left: 20px !important;
+}
+
+#threat-counts tr td:first-child,
+#threat-counts tr th:first-child,
+#threat-summary tr:first-child th,
+#detailed-summary-table thead tr:first-child th,
+#detailed-summary-table tr.new-ongoing-header th {
+  background: rgba(35, 82, 140, 0.9);
+  color: white;
+}
+
+#threat-counts table tr:last-child td,
+#threat-counts tr td:last-child,
+#threat-counts tr th:last-child,
+#threat-counts tr:last-child th:first-child {
+  background: rgba(142, 168, 219, 0.6);
+  color: var(--bs-text);
+}
+
+#detailed-summary-table thead tr.middle-header-second {
+  background: var(--bs-gray-100);
+}
+
+#detailed-summary-table h6 {
+  margin-bottom: 0.25rem;
+}
+
+#detailed-summary-table a {
+  color: var(--bs-text);
+}
+
+#detailed-summary-table {
+  line-height: 1.4;
+}
+
+#detailed-summary-table td> :last-child {
+  margin-bottom: 0 !important;
+}
+
+#threat-counts tr,
+#threat-counts th,
+#threat-summary th,
+#threat-summary td.newness-col,
+#threat-summary td.assessment,
+#detailed-summary-table tr td:first-child {
+  text-align: center;
+}
+
+
+/* PRINT-SPECIFIC STYLES */
+@media print {
+  .print-atomic {
+    break-inside: avoid;
+  }
+
+  @page {
+    size: A3 landscape;
+    margin: 20pt 20pt 20pt 20pt;
+    /*
+      this affects the margin in the printer settings
+      if vertical margin is above 25pt, the ugly print-specific header/footer is shown
+      Adding margins to body only affect the first and last page
+    */
+  }
+
+  .container {
+    /* full-width printing */
+    width: 100%;
+    max-width: 100%;
+  }
+
+  body {
+    font-size: 0.8rem;
+  }
+
+  table {
+    break-inside: avoid;
+  }
+
+  .page-break {
+    page-break-after: always;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  .h1,
+  .h2,
+  .h3,
+  .h4,
+  .h5,
+  .h6,
+  header {
+    page-break-after: avoid;
+  }
+
+  .break-inside-avoid {
+    /* for sections you'd prefer not to break across pages  */
+    break-inside: avoid;
+  }
+
+  .break-after-avoid {
+    /* Good for headers */
+    break-after: avoid;
+  }
+
+  .break-before-avoid {
+    /* Good for elements below headers and first-children */
+    break-before: avoid;
+  }
+
+  #detailed-summary-table tr {
+    break-inside: avoid;
+  }
+
+  .tr-header>div {
+    margin-left: 3rem;
+    margin-right: 3rem;
+    margin-top: 3rem;
+    background: var(--cira-dark-red);
+    color: white;
+    padding: 1rem 0.25rem;
+  }
+
+  #tr-header-small .tr-header>div {
+    margin-top: 0;
+    margin-left: 1.25rem;
+    margin-right: 1.25rem;
+    margin-bottom: 0;
+    zoom: 0.8;
+  }
+
+  #detailed-summary-table {
+    margin-top: 1rem !important;
+  }
+
+  tr .action {
+    background-color: var(--cira-dark-red);
+    color: white;
+    font-weight: bold;
+  }
+
+  tr .action a {
+    color: white !important;
+  }
+
+  tr .investigation {
+    background-color: var(--cira-yellow);
+  }
+
+  tr .monitoring {
+    background-color: var(--cira-green);
+  }
+
+  tr .propose_remove {
+    background-color: var(--cira-gray);
+  }
+
+  #detailed-summary-table a {
+    color: var(--bs-text-body) !important;
+    text-decoration: none;
+  }
+
+  #detailed-summary-table h6 {
+    font-size: 0.8rem !important;
+  }
+
+  #tr-details-help {
+    background: var(--cira-light-blue) !important;
+  }
+
+  .title-blue {
+    background: var(--cira-dark-blue);
+  }
+
+  #threat-counts tr td:first-child,
+  #threat-counts tr th:first-child,
+  #threat-summary tr:first-child th,
+  #detailed-summary-table thead tr:first-child th,
+  #detailed-summary-table tr.new-ongoing-header th {
+    background: var(--cira-dark-blue);
+  }
+
+  #threat-counts table tr:last-child td,
+  #threat-counts tr td:last-child,
+  #threat-counts tr th:last-child,
+  #threat-counts tr:last-child th:first-child {
+    background: var(--cira-medium-blue);
+  }
+
+  div.print-zoom-120 {
+    zoom: 1.2;
+  }
+
+  div.print-zoom-80 {
+    zoom: 0.8;
+  }
+
+  div.print-footer {
+    position: fixed;
+    bottom: 0;
+    right: 3rem;
+    text-align: right;
+  }
+
+  div.print-footer-wide {
+    position: fixed;
+    bottom: 0;
+    right: 3rem;
+    left: 3rem;
+  }
+
+  #tr-subversion {
+    margin-left: 3rem;
+    margin-right: 3rem;
+    margin-top: 0.75rem !important;
+    margin-bottom: 0 !important;
+  }
+
+  #print-header {
+    position: absolute;
+    left: 4.5rem;
+    top: 2rem;
+  }
+
+  /* Condense / shrink first page elements to fit */
+  body.shrink-1 .tr-header>div {
+    margin-top: 1.5rem;
+  }
+
+  body.shrink-1 div.report-table-title.pt-5 {
+    padding-top: 1.5rem !important;
+  }
+
+  body.shrink-1 table.threat-summary th,
+  body.shrink-1 table.threat-summary td {
+    padding: 5px 10px;
+  }
+
+  body.shrink-2 #threat-summary table.threat-summary {
+    width: 1000px;
+  }
+
+  body.shrink-3 .tr-header>div {
+    margin-top: 1rem;
+  }
+
+  body.shrink-3 div.print-zoom-120 {
+    zoom: 1.1;
+  }
+
+  body.shrink-4 div.print-zoom-120 {
+    zoom: 1;
+  }
+
+  body.shrink-4 .tr-header>div {
+    margin-top: 0.5rem;
+  }
+
+}
+
+/* CSS logo for landing page */
+
+:root {
+  --prism-size: 150px;
+}
+
+#landing-logo {
+  display: none;
+  position: relative;
+  height: calc(var(--prism-size));
+  margin-top: 2rem;
+  margin-bottom: 3rem;
+  max-width: 1768px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+
+#prism {
+  position: absolute;
+  left: 50%;
+  margin-left: calc(var(--prism-size) / -2);
+  z-index: 2;
+}
+
+#prism svg {
+  width: var(--prism-size);
+  height: var(--prism-size);
+}
+
+#prism svg polygon {
+  fill: #f6fcff;
+  stroke: #7b8a9d;
+  stroke-width: 3px;
+}
+
+#landing-logo div.lines-in {
+  position: absolute;
+  top: calc(var(--prism-size) * 0.25);
+  left: 0;
+  width: 100%;
+}
+
+#landing-logo div.line-in {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 10px;
+  margin-top: 2px;
+}
+
+#landing-logo div#line-out {
+  position: absolute;
+  --line-out-height: 30px;
+  top: calc(var(--prism-size) / 2 - var(--line-out-height) / 2);
+  left: 50%;
+  width: 50%;
+  height: var(--line-out-height);
+  background: #fbfeff;
+  border-top: solid 1px #9faec0;
+  border-bottom: solid 1px #9faec0;
+}
+
+#landing-logo #left-fade {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(to left, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1));
+}
+
+#landing-logo #right-fade {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1));
+}
+
+div.jumbotron {
+  min-height: calc(100vh - 10rem);
+  display: flex;
+  align-items: center;
+}
+
+div.jumbotron>div {
+  width: 100%;
+}
+
+#login-container {
+  min-height: calc(100vh - 15rem);
+  display: flex;
+  align-items: center;
+}
+
+div.close-paragraphs p:not(:last-child) {
+  margin-bottom: 0.25rem;
+}
+
+#reset_login_mailto {
+  float: right;
+  margin-top: 6px;
+}
+
+.super-warning {
+  display: none;
+}
+
+body.super-user .super-warning {
+  display: block;
+  background-color: rgb(203, 17, 17);
+  color: white;
+  text-align: center;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  z-index: 50;
+}
+
+body.super-user {
+  margin-top: 3.5rem;
+  min-height: calc(100vh - 3.5rem);
+}
+
+body.super-user .modal-dialog {
+  margin-top: 5rem;
+}
+
+.admin-action {
+  color: rgb(203, 17, 17);
+}
+
+.pad-17 {
+  padding-left: 17px;
+  font-weight: bold;
+}
+
+.dataTables_filter input[type="search"] {
+  width: 400px;
+}
+
+@media(max-width:900px) {
+  .dataTables_filter input[type="search"] {
+    width: 400px;
+  }
+}
+
+@media(max-width:768px) {
+  .dataTables_filter input[type="search"] {
+    width: 250px;
+  }
+}
+
+/* Invalid form field highlighting */
+body.highlight-invalid input:invalid,
+body.highlight-invalid textarea:invalid,
+body.highlight-invalid select:invalid,
+body.highlight-invalid div.phac_aspc_form_autocomplete:has(input:invalid) {
+  border-color: var(--bs-danger);
+  outline: solid 1px var(--bs-danger);
+}
+
+#toggle-notes {
+  position: fixed;
+  top: 0;
+  right: 0;
+  border-bottom-right-radius: 0;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  z-index: 60;
+  /* border-color: white; */
+  border-left-width: 1px;
+  border-bottom-width: 1px;
+  border-right-width: 0;
+  border-top-width: 0;
+}
+
+#notes-sidebar {
+  box-shadow: rgba(0, 0, 0, 0.1) 0 0 10px;
+}
+
+#notes-sidebar textarea {
+  height: 6.5rem;
+  width: 100%;
+  resize: none;
+}
+
+#comments-container {
+  height: calc(100vh - 12.75rem);
+  overflow-y: auto;
+  padding-bottom: 0.25rem;
+  overflow-x: hidden;
+}
+
+#notes-sidebar .add-comment-container {
+  position: absolute;
+  bottom: 0.25rem;
+  width: calc(100% - 1rem);
+  /* box-shadow: rgba(255,255,255,1) -7px -14px 10px; */
+}
+
+#notes-sidebar .add-comment-divider {
+  position: absolute;
+  width: 100%;
+  background: white;
+  height: 10px;
+  left: 0;
+  margin-top: -6px;
+  /* box-shadow: white 0 0 5px; */
+}
+
+.comment-blob {
+  background: #fff3cd;
+  border-radius: 5px;
+  padding: 0.5rem 0.75rem 0.5rem 0.75rem;
+  margin-bottom: 0.5rem;
+  border: solid 1px #ffecb5;
+}
+
+.comment-blob .dropdown {
+  opacity: 0;
+  height: 0;
+  position: relative;
+  top: -1.75rem;
+}
+
+.comment-outer:hover .dropdown,
+.comment-outer .dropdown:focus-within {
+  opacity: 1;
+  text-align: right;
+}
+
+.comment-actions .dropdown>button,
+.comment-actions .dropdown>button:hover {
+  background: #fff;
+  box-shadow: rgba(0, 0, 0, 0.1) 2px 3px 5px;
+  padding: 0 5px;
+}
+
+#notes-container .offcanvas-body {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  padding-top: 0;
+  overflow-x: hidden;
+}
+
+#notes-container .comment-meta {
+  font-size: smaller;
+}
+
+#notes-container .comment-text {
+  white-space: pre-wrap;
+}
+
+#notes-saved-alert {
+  font-size: 1rem;
+  font-weight: normal;
+  position: absolute;
+  right: 50px;
+  top: 19px;
+  transition: opacity 1s;
+  opacity: 1;
+}
+
+#notes-saved-alert.fade-out {
+  opacity: 0;
+}
+
+input:read-only:not(.btn):not([type="checkbox"]):not([type="radio"]),
+textarea:read-only,
+input:read-only:focus:not(.btn):not([type="checkbox"]):not([type="radio"]),
+textarea:read-only:focus {
+  background-color: #F7F7F7;
+  outline: none;
+  border-color: #ced4da;
+  box-shadow: none;
+}
+
+#tr-phase-list li.current-phase {
+  font-weight: 500;
+  font-style: italic;
+}
+
+#tr-phase-list li.list-group-item {
+  border: none;
+  background: none;
+}
+
+#threat-colors-legend span.assessment-span {
+  border-left-width: 5px;
+}
+
+#threat-colors-legend {
+  padding: 0.5rem 0;
+  margin: 0rem 0.75rem;
+  border: solid 1px var(--bs-gray-300);
+}
+
+a.dropdown-item svg,
+a.dropdown-item i {
+  width: 16px;
+  margin-left: -5px;
+  margin-right: 2px;
+}
+
+td.threat_title {
+  height: 1px;
+  /* Ignored; necessary to set full-height link inside cell */
+}
+
+td.threat_title a {
+  display: block;
+  height: 100%;
+  width: 100%;
+}
+
+/* Corner ribbons */
+
+.corner-ribbon {
+  width: 210px;
+  padding: 7px 10px;
+  position: absolute;
+  text-align: center;
+  color: #fff;
+  position: fixed;
+  top: 13px;
+  left: -72px;
+  transform: rotate(-45deg);
+  z-index: 100;
+  text-transform: uppercase;
+  font-family: Helvetica, Arial, sans-serif;
+  font-weight: 700;
+  opacity: 1;
+  display: none;
+  z-index: 10000;
+}
+
+.corner-ribbon.dev {
+  background: var(--bs-green);
+  display: block;
+}
+
+.corner-ribbon.test {
+  background: var(--bs-yellow);
+  color: var(--bs-dark);
+  display: block;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+}
+
+dd ul,
+#users td ul {
+  padding-left: 1em;
+}
+
+div#sub-header .text-secondary {
+  color: var(--bs-gray-700) !important;
+}
+
+div#sub-header a {
+  color: #0b66eb;
+}

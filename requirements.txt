@@ -1,0 +1,3 @@
+django
+django-jinja
+django-magiclink
