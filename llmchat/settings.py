@@ -19,7 +19,7 @@ import environ
 from google.cloud import secretmanager
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent
 
 
 # Quick-start development settings - unsuitable for production
@@ -126,6 +126,7 @@ MAGICLINK_REQUIRE_SAME_BROWSER = False  # As above
 
 GC_NOTIFY_API_KEY = env("GC_NOTIFY_API_KEY")
 GC_NOTIFY_TEMPLATE_ID = env("GC_NOTIFY_TEMPLATE_ID")
+POWER_AUTOMATE_URL = env("POWER_AUTOMATE_URL")
 
 ROOT_URLCONF = "llmchat.urls"
 
