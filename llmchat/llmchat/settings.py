@@ -19,7 +19,8 @@ import environ
 from google.cloud import secretmanager
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent
+BASE_DIR = Path(__file__).resolve().parent.parent
+print(BASE_DIR)
 
 
 # Quick-start development settings - unsuitable for production
@@ -30,11 +31,11 @@ BASE_DIR = Path(__file__).resolve().parent
 
 # [START gaestd_py_django_secret_config]
 env = environ.Env(DEBUG=(bool, True))
-env_file = os.path.join(BASE_DIR, ".env")
+env_file = os.path.join(BASE_DIR, "../.env")
 
 if os.path.isfile(env_file):
     # Use a local secret file, if provided
-
+    print('Loading .env file')
     env.read_env(env_file)
 # [START_EXCLUDE]
 elif os.getenv("TRAMPOLINE_CI", None):
@@ -117,12 +118,12 @@ AUTHENTICATION_BACKENDS = (
 LOGIN_URL = "phac_only_login"
 
 LOGIN_REDIRECT_URL = ""
-MAGICLINK_LOGIN_SENT_TEMPLATE_NAME = "login_link_sent.jinja"
-MAGICLINK_LOGIN_FAILED_TEMPLATE_NAME = "login_failed.jinja"
+MAGICLINK_LOGIN_SENT_TEMPLATE_NAME = "auth/login_link_sent.jinja"
+MAGICLINK_LOGIN_FAILED_TEMPLATE_NAME = "auth/login_failed.jinja"
 MAGICLINK_REQUIRE_SIGNUP = False
-MAGICLINK_TOKEN_USES = 3  # M365 "clicks" links to check them, so must be > 1
-MAGICLINK_REQUIRE_SAME_IP = False  # Otherwise M365 checks will invalidate token
-MAGICLINK_REQUIRE_SAME_BROWSER = False  # As above
+MAGICLINK_TOKEN_USES = 1  # M365 "clicks" links to check them, so must be > 1
+MAGICLINK_REQUIRE_SAME_IP = True  # Otherwise M365 checks will invalidate token
+MAGICLINK_REQUIRE_SAME_BROWSER = True  # As above
 
 GC_NOTIFY_API_KEY = env("GC_NOTIFY_API_KEY")
 GC_NOTIFY_TEMPLATE_ID = env("GC_NOTIFY_TEMPLATE_ID")
@@ -163,6 +164,7 @@ DATABASES = {"default": env.db()}
 
 # If the flag as been set, configure to use proxy
 if os.getenv("USE_CLOUD_SQL_AUTH_PROXY", None):
+    print("Using Cloud SQL Auth Proxy")
     DATABASES["default"]["HOST"] = "127.0.0.1"
     DATABASES["default"]["PORT"] = 5432
 
@@ -214,10 +216,11 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_ROOT = "static"
-STATIC_URL = "/static/"
+STATIC_URL = "static/"
 
-STATICFILES_DIRS = []
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field

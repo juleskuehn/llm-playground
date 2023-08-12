@@ -35,7 +35,7 @@ log = logging.getLogger(__name__)
 
 
 class PhacOnlyLoginView(Login):
-    template_name = "login.jinja"
+    template_name = "auth/login.jinja"
 
     def post(self, request, *args, **kwargs):
         logout(request)
@@ -65,8 +65,10 @@ class PhacOnlyLoginView(Login):
 
         magiclink_url = magiclink.generate_url(request)
 
-        # Use GC Notify to send email
+        # Option 1: Use Django SMTP to send email (e.g. through SendGrid)
+        # magiclink.send(request)
 
+        # Option 2: Use GC Notify to send email
         # response = notifications_client.send_email_notification(
         #     email_address=email,
         #     template_id=GC_NOTIFY_TEMPLATE_ID,
@@ -76,8 +78,7 @@ class PhacOnlyLoginView(Login):
         #     }
         # )
 
-        # Send POST request to Power Automate to send email
-
+        # Option 3: Send POST request to Power Automate to send email
         url = POWER_AUTOMATE_URL
         payload = json.dumps(
             {
@@ -89,8 +90,7 @@ class PhacOnlyLoginView(Login):
         headers = {"Content-Type": "application/json"}
         response = requests.request("POST", url, headers=headers, data=payload)
 
-        log.info(f"Email sent to {email} through Power Automate with link {magiclink_url}.")
-
+        log.info(f"Email sent to {email} with link {magiclink_url}.")
         sent_url = get_url_path(settings.LOGIN_SENT_REDIRECT)
         response = HttpResponseRedirect(sent_url)
         if settings.REQUIRE_SAME_BROWSER:
