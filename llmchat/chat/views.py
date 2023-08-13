@@ -5,6 +5,7 @@ from django.contrib.auth import logout
 
 from langchain.chat_models import ChatVertexAI
 from langchain.schema import HumanMessage, SystemMessage, AIMessage
+chat_llm = ChatVertexAI(max_output_tokens=1024)
 
 from chat.forms import MessageForm
 from chat.models import Message, User, Chat
@@ -30,7 +31,6 @@ class ChatView(LoginRequiredMixin, TemplateView):
                 chat_id=kwargs["chat_id"],
             )
             messages = Message.objects.filter(chat_id=kwargs["chat_id"])
-            chat_llm = ChatVertexAI(max_output_tokens=1024)
             chat_messages = [
                 SystemMessage(
                     content="You are a helpful general purpose AI. You respond to user queries correctly and harmlessly. You always reason step by step to ensure you get the correct answer, and ask for clarification when you need it.",
