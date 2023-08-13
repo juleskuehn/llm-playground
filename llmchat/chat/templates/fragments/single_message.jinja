@@ -1,5 +1,5 @@
 {% if message.message != "" %}
-  <div class="message-outer" id="message-{{ message.id }}">
+  <div class="message-outer{% if message.is_bot %} bot{% endif %}" id="message-{{ message.id }}">
     <div class="message-meta text-secondary">
       <span class="message-author me-1">
         {% if message.is_bot %}

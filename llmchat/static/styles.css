@@ -1029,11 +1029,16 @@ body.highlight-invalid div.phac_aspc_form_autocomplete:has(input:invalid) {
 }
 
 .message-blob {
-  background: #fff3cd;
   border-radius: 5px;
   padding: 0.5rem 0.75rem 0.5rem 0.75rem;
   margin-bottom: 0.5rem;
-  border: solid 1px #ffecb5;
+  background: #f4f4ff;
+  border: solid 1px #cdccff;
+}
+
+.bot .message-blob {
+  border: solid 1px #f1dda2;
+  background: #fff8e2;
 }
 
 .message-blob .dropdown {
