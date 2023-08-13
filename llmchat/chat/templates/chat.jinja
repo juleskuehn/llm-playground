@@ -3,24 +3,35 @@
   <div class="container">
     <h1>Chat with PaLM 2 Large Language Model (LLM)</h1>
     <div id="chat-container">
-    <div id="messages-container">{% include 'fragments/messages.jinja' %}</div>
-    <div class="add-message-container">
-      <form hx-post="{{ request.path }}" hx-swap="none" id="chat-form">
-        {{ form.message.label_tag(attrs={"class": "visually-hidden"}) }}
-        {{ form.message }}
-        <div class="row mt-1 message-send-row">
-          <div class="col-auto text-end">
-            <button type="submit"
-                    class="btn btn-primary btn-sm"
-                    id="save-chat"
-                    aria-label="Send">
-              Send
-              <i class="bi bi-send"></i>
-            </button>
+      {% set messages = chat.message_set.all() %}
+      <div id="messages-container" class="mx-1 pt-1">{% include 'fragments/messages.jinja' %}</div>
+      <div class="add-message-container">
+        <form hx-post="{{ request.path }}"
+              hx-swap="innerHTML"
+              hx-target="#messages-container"
+              id="chat-form">
+          <div class="row mx-0">
+            {{ form.message.label_tag(attrs={"class": "visually-hidden"}) }}
+            <div class="col px-1">
+              <div class="input-group">
+                {{ form.message }}
+                <button id="send-button" class="btn btn-outline-secondary" type="submit" aria-label="Send">
+                  <i class="bi bi-send"></i>
+                </button>
+              </div>
+            </div>
           </div>
-        </div>
-      </form>
-    </div>
+        </form>
+      </div>
     </div>
   </div>
+  <script>
+    /* Ctrl+Enter to submit */
+    document.addEventListener('keydown', function (event) {
+      if (event.ctrlKey && event.key === 'Enter') {
+        document.getElementById('send-button').click();
+      }
+    });
+    document.getElementById('id_message').focus();
+  </script>
 {% endblock content %}

@@ -981,19 +981,31 @@ body.highlight-invalid div.phac_aspc_form_autocomplete:has(input:invalid) {
 
 #chat-container {
   position: relative;
-  height: calc(100vh - 14.5rem);
-  background: var(--bs-gray-300);
+  height: calc(100vh - 13.75rem);
+  background: var(--bs-gray-100);
   border-radius: 5px;
+}
+
+#chat-form button {
+  background: white;
+  border-color: #ced4da;
+}
+
+#chat-form button:hover,
+#chat-form button:focus {
+  background: var(--bs-gray-800);
+  color: var(--bs-gray-100);
+  border-color: transparent;
 }
 
 #chat-container textarea {
   height: 6.5rem;
-  width: 100%;
+  /* width: 100%; */
   resize: none;
 }
 
 #messages-container {
-  height: calc(100vh - 23.75rem);
+  height: calc(100vh - 21.5rem);
   overflow-y: auto;
   padding-bottom: 0.25rem;
   overflow-x: hidden;
