@@ -1,17 +1,3 @@
-:root {
-  --action: #f7b2b2;
-  --monitoring: #aae794;
-  --investigation: #f9f04d;
-  --propose-remove: #ecdff5;
-  --cira-dark-red: #ae0000;
-  --cira-yellow: #ffd966;
-  --cira-green: #c5dfb4;
-  --cira-gray: #d9d9d9;
-  --cira-light-blue: #d9e0f1;
-  --cira-dark-blue: #22528d;
-  --cira-medium-blue: #8ea9db;
-}
-
 body {
   /* min-height: 45rem;
   padding-top: 4.5rem;
@@ -993,14 +979,33 @@ body.highlight-invalid div.phac_aspc_form_autocomplete:has(input:invalid) {
   border-top-width: 0;
 }
 
+#chat-container {
+  position: relative;
+  height: calc(100vh - 13.75rem);
+  background: var(--bs-gray-100);
+  border-radius: 5px;
+}
+
+#chat-form button {
+  background: white;
+  border-color: #ced4da;
+}
+
+#chat-form button:hover,
+#chat-form button:focus {
+  background: var(--bs-gray-800);
+  color: var(--bs-gray-100);
+  border-color: transparent;
+}
+
 #chat-container textarea {
   height: 6.5rem;
-  width: 100%;
+  /* width: 100%; */
   resize: none;
 }
 
 #messages-container {
-  height: calc(100vh - 12.75rem);
+  height: calc(100vh - 21.5rem);
   overflow-y: auto;
   padding-bottom: 0.25rem;
   overflow-x: hidden;
@@ -1009,7 +1014,7 @@ body.highlight-invalid div.phac_aspc_form_autocomplete:has(input:invalid) {
 #chat-container .add-message-container {
   position: absolute;
   bottom: 0.25rem;
-  width: calc(100% - 1rem);
+  width: 100%;
   /* box-shadow: rgba(255,255,255,1) -7px -14px 10px; */
 }
 
@@ -1024,11 +1029,16 @@ body.highlight-invalid div.phac_aspc_form_autocomplete:has(input:invalid) {
 }
 
 .message-blob {
-  background: #fff3cd;
   border-radius: 5px;
   padding: 0.5rem 0.75rem 0.5rem 0.75rem;
   margin-bottom: 0.5rem;
-  border: solid 1px #ffecb5;
+  background: #f4f4ff;
+  border: solid 1px #cdccff;
+}
+
+.bot .message-blob {
+  border: solid 1px #f1dda2;
+  background: #fff8e2;
 }
 
 .message-blob .dropdown {

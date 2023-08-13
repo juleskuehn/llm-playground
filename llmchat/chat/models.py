@@ -10,22 +10,13 @@ class Message(models.Model):
     """
     A message sent by a user or bot.
     """
-    author = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     message = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
-
+    is_bot = models.BooleanField(default=False)
     chat = models.ForeignKey("Chat", on_delete=models.CASCADE)
 
     def __str__(self):
         return self.message
-    
-    @property
-    def is_bot(self):
-        return self.user is None
-    
-    @property
-    def is_user(self):
-        return self.user is not None
 
 
 class Chat(models.Model):
@@ -34,6 +25,7 @@ class Chat(models.Model):
     """
     timestamp = models.DateTimeField(auto_now_add=True)
     title = models.CharField(max_length=255, blank=True, default="")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
 
     def __str__(self):
         return f"Chat {self.id}: {self.title}"

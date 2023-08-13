@@ -5,3 +5,6 @@ django-magiclink
 google-cloud-secret-manager
 psycopg2-binary
 notifications-python-client
+langchain
+pydantic
+google-cloud-aiplatform

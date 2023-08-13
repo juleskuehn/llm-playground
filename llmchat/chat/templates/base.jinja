@@ -63,7 +63,8 @@
                 <ul class="dropdown-menu dropdown-menu-end">
                   <li>
                     <a class="dropdown-item" href="{{ url("logout") }}">
-                      <i class="fa fa-power-off"></i>
+                      {# Bootstrap icon for logout #}
+                      <i class="bi bi-box-arrow-right"></i>
                       Log out
                     </a>
                   </li>
@@ -74,7 +75,7 @@
         </div>
       </div>
     </nav>
-    <main class="py-3" id="main-content">
+    <main class="pt-3" id="main-content">
       <div id="modal-container"></div>
       {% block sidebar %}<!-- insert default navigation text for every page -->{% endblock %}
       <div class="container">

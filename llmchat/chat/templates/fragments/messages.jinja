@@ -8,5 +8,10 @@
   if (messages) {
     messages.scrollTop = messages.scrollHeight;
   }
+  const message_field = document.getElementById('id_message');
+  if (message_field) {
+    message_field.value = '';
+    message_field.focus();
+  }
 })();
 </script>
