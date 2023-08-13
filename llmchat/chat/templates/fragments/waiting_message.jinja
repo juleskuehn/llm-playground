@@ -1,0 +1,21 @@
+{% include "fragments/single_message.jinja" %}
+{% if waiting %}
+  {% set message = {'is_bot': True, 'typing': True} %}
+  {% include "fragments/single_message.jinja" %}
+  {# Make another HTMX request to get the LLM response #}
+  <div class="d-none" hx-get="{{ url("chat_response", chat_id=chat_id) }}" hx-target="#message-typing" hx-swap="outerHTML" hx-trigger="load"></div>
+{% endif %}
+<script>
+// Scroll to the bottom of the messages
+(function () {
+  const messages = document.getElementById("messages-container");
+  if (messages) {
+    messages.scrollTop = messages.scrollHeight;
+  }
+  const message_field = document.getElementById('id_message');
+  if (message_field) {
+    message_field.value = '';
+    message_field.focus();
+  }
+})();
+</script>

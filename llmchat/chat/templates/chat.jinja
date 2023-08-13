@@ -7,7 +7,7 @@
       <div id="messages-container" class="mx-1 pt-1">{% include 'fragments/messages.jinja' %}</div>
       <div class="add-message-container">
         <form hx-post="{{ request.path }}"
-              hx-swap="innerHTML"
+              hx-swap="beforeend"
               hx-target="#messages-container"
               id="chat-form">
           <div class="row mx-0">

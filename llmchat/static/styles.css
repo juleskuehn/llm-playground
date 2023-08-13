@@ -1048,6 +1048,61 @@ body.highlight-invalid div.phac_aspc_form_autocomplete:has(input:invalid) {
   top: -1.75rem;
 }
 
+.typing {
+  position: relative;
+  display: inline-block;
+  height: 100%;
+}
+.typing span {
+  content: "";
+  -webkit-animation: blink 1.5s infinite;
+          animation: blink 1.5s infinite;
+  -webkit-animation-fill-mode: both;
+          animation-fill-mode: both;
+  height: 8px;
+  width: 8px;
+  background: #3b5998;
+  position: absolute;
+  left: 0;
+  top: 50%;
+  margin-top: -4px;
+  border-radius: 50%;
+}
+.typing span:nth-child(2) {
+  -webkit-animation-delay: 0.2s;
+          animation-delay: 0.2s;
+  margin-left: 12px;
+}
+.typing span:nth-child(3) {
+  -webkit-animation-delay: 0.4s;
+          animation-delay: 0.4s;
+  margin-left: 24px;
+}
+
+@-webkit-keyframes blink {
+  0% {
+    opacity: 0.1;
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.1;
+  }
+}
+
+@keyframes blink {
+  0% {
+    opacity: 0.1;
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.1;
+  }
+}
+
 .message-outer:hover .dropdown,
 .message-outer .dropdown:focus-within {
   opacity: 1;

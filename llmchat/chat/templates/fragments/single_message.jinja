@@ -1,19 +1,22 @@
-{% if message.message != "" %}
-  <div class="message-outer{% if message.is_bot %} bot{% endif %}" id="message-{{ message.id }}">
-    <div class="message-meta text-secondary">
-      <span class="message-author me-1">
-        {% if message.is_bot %}
-          LLM
-        {% else %}
-          {{ request.user.username.split('@')[0] }}
-        {% endif %}
-      </span>
-      <span class="message-date">
+<div class="message-outer{% if message.is_bot %} bot{% endif %}"
+     id="message-{% if message.typing %}typing{% else %}{{ message.id }}{% endif %}">
+  <div class="message-meta text-secondary">
+    <span class="message-author me-1">
+      {% if message.is_bot %}
+        LLM
+      {% else %}
+        {{ request.user.username.split("@")[0] }}
+      {% endif %}
+    </span>
+    <span class="message-date">
+      {% if message.typing %}
+        Now
+      {% else %}
         {{ message.timestamp.strftime("%Y-%m-%d %H:%M") }}
-      </span>
-    </div>
-    <div class="message-blob">
-      <div class="message-text">{{ message.message }}</div>
-    </div>
+      {% endif %}
+    </span>
   </div>
-{% endif %}
+  <div class="message-blob">
+    <div class="message-text">{% if message.typing %}<div class="typing"> <span></span><span></span><span></span></div>{% else %}{{ message.message }}{% endif %}</div>
+  </div>
+</div>
