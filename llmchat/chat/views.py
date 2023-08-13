@@ -3,6 +3,9 @@ from django.views.generic import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import logout
 
+from langchain.chat_models import ChatVertexAI
+from langchain.schema import HumanMessage, SystemMessage, AIMessage
+
 from chat.forms import MessageForm
 from chat.models import Message, User, Chat
 
@@ -22,9 +25,26 @@ class ChatView(LoginRequiredMixin, TemplateView):
     def post(self, request, *args, **kwargs):
         form = MessageForm(request.POST)
         if form.is_valid():
-            message = Message.objects.create(
+            user_message = Message.objects.create(
                 message=form.cleaned_data["message"],
                 chat_id=kwargs["chat_id"],
+            )
+            messages = Message.objects.filter(chat_id=kwargs["chat_id"])
+            chat_llm = ChatVertexAI(max_output_tokens=1024)
+            chat_messages = [
+                SystemMessage(
+                    content="You are a helpful general purpose AI. You respond to user queries correctly and harmlessly. You always reason step by step to ensure you get the correct answer, and ask for clarification when you need it.",
+                )
+            ]
+            for message in messages:
+                if message.is_bot:
+                    chat_messages.append(AIMessage(content=message.message))
+                else:
+                    chat_messages.append(HumanMessage(content=message.message))
+            bot_message = Message.objects.create(
+                message=chat_llm(chat_messages).content,
+                chat_id=kwargs["chat_id"],
+                is_bot=True,
             )
             messages = Message.objects.filter(chat_id=kwargs["chat_id"])
             return render(request, "fragments/messages.jinja", {"messages": messages})
