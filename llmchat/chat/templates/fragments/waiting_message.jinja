@@ -17,5 +17,9 @@
     message_field.value = '';
     message_field.focus();
   }
+  const no_messages_placeholder = document.getElementById('no-messages-placeholder');
+  if (no_messages_placeholder) {
+    no_messages_placeholder.remove();
+  }
 })();
 </script>

@@ -2,6 +2,8 @@ from django.shortcuts import render, redirect
 from django.views.generic import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import logout
+from django.http import HttpResponse
+from django.urls import reverse
 
 from langchain.chat_models import ChatVertexAI
 from langchain.llms import VertexAI
@@ -83,7 +85,6 @@ class NewChatView(ChatView):
     """
     Creates a new chat on GET and renders the chat template
     """
-
     def get(self, request, *args, **kwargs):
         # Create a new chat
         chat = Chat.objects.create(user=request.user)
@@ -94,6 +95,22 @@ class NewChatView(ChatView):
 def logout_view(request):
     logout(request)
     return redirect("index")
+
+
+def delete_chat(request, chat_id, current_chat=None):
+    # HTMX delete route
+    # Delete chat
+    chat = Chat.objects.get(id=chat_id)
+    if not chat.user == request.user:
+        return HttpResponse(status=403)
+    
+    chat.delete()
+    # Is this the currently open chat? If so, redirect away
+    if current_chat == "True":
+        response = HttpResponse()
+        response["HX-Redirect"] = reverse("index")
+        return response
+    return HttpResponse(status=200)
 
 
 def summarize_chat(chat_id):

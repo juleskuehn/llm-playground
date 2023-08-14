@@ -986,11 +986,36 @@ body.highlight-invalid div.phac_aspc_form_autocomplete:has(input:invalid) {
   background: var(--bs-light);
 }
 
-div#sidebar {
+#sidebar {
   width: 320px;
   left: 0;
   height: calc(100vh - 8.5rem);
   position: fixed;
+}
+
+#sidebar button.delete-chat {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: var(--bs-light);
+  opacity: 0;
+  transition: linear 0.2s;
+  /* Delay showing by 200ms */
+  /* transition-delay: 200ms; */
+}
+
+#sidebar li {
+  position: relative;
+}
+
+#sidebar li.current {
+  font-weight: 500;
+}
+
+#sidebar li:hover button.delete-chat,
+#sidebar li:focus button.delete-chat,
+#sidebar button.delete-chat:focus {
+  opacity: 1;
 }
 
 #chat-container {
@@ -999,14 +1024,24 @@ div#sidebar {
   left: 320px;
 }
 
+#no-messages-placeholder {
+  top: 50%;
+  position: relative;
+  font-style: italic;
+}
+
 #chat-inputs {
   box-shadow: rgba(0, 0, 0, 0.1) 0 0 8px;
   border-radius: 5px;
 }
 
+#chat-inputs:focus-within {
+  box-shadow: rgba(0,0,0,0.2) 0 0 8px;
+}
+
 #chat-form button {
   background: white;
-  border-color: #ced4da;
+  border-color: var(--bs-border-color);
 }
 
 #chat-form button:hover,
@@ -1026,7 +1061,7 @@ div#sidebar {
 #chat-form textarea:focus {
   outline: none !important;
   box-shadow: none !important;
-  border-color: var(--bs-gray-800) !important;
+  border-color: var(--bs-border-color);
 }
 
 #messages-container {
