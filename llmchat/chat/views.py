@@ -4,9 +4,11 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import logout
 
 from langchain.chat_models import ChatVertexAI
+from langchain.llms import VertexAI
 from langchain.schema import HumanMessage, SystemMessage, AIMessage
 
 chat_llm = ChatVertexAI(max_output_tokens=1024)
+text_llm = VertexAI()
 
 from chat.forms import MessageForm
 from chat.models import Message, User, Chat
@@ -37,11 +39,22 @@ def chat_response(request, chat_id):
 
 
 class ChatView(LoginRequiredMixin, TemplateView):
-    # Add a form to the context
+    # GET method returns the entire chat page
+    # POST method creates message
+    # and returns HTML fragment with message + "LLM typing" indicator
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["chat"] = Chat.objects.get(id=kwargs["chat_id"])
         context["form"] = MessageForm()
+        # Get non-empty chats for user
+        user_chats = Chat.objects.filter(user=self.request.user).order_by("-timestamp")
+        user_chats = [chat for chat in user_chats if chat.message_set.count() > 1]
+        # Summarize chats into chat.title if not already set
+        for chat in user_chats:
+            if chat.title == "":
+                chat.title = summarize_chat(chat.id)
+                chat.save()
+        context["user_chats"] = user_chats
         return context
 
     def post(self, request, *args, **kwargs):
@@ -78,27 +91,21 @@ class NewChatView(ChatView):
         return redirect("chat", chat_id=chat.id)
 
 
-class SingleMessageView(LoginRequiredMixin, TemplateView):
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["message"] = Message.objects.get(id=kwargs["message_id"])
-        return context
-
-    def post(self, request, *args, **kwargs):
-        form = MessageForm(request.POST)
-        if form.is_valid():
-            message = Message.objects.create(
-                author=request.user,
-                message=form.cleaned_data["message"],
-                chat_id=kwargs["chat_id"],
-            )
-            return render(request, "single_message.jinja", {"message": message})
-        else:
-            return self.render_to_response({"form": form})
-
-    template_name = "single_message.jinja"
-
-
 def logout_view(request):
     logout(request)
     return redirect("index")
+
+
+def summarize_chat(chat_id):
+    chat_text = "\n".join(
+        [message.message for message in Message.objects.filter(chat_id=chat_id)[:5]]
+    )
+    if chat_text == "":
+        return "Empty chat"
+    if len(chat_text) > 500:
+        chat_text = chat_text[:500]
+    prompt = f"""
+    Write a concise title (1-4 words) to the following chat. You must respond with at least one word:
+    {chat_text}
+    TITLE: """
+    return text_llm(prompt)

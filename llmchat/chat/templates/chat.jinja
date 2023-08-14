@@ -1,27 +1,32 @@
 {% extends 'base.jinja' %}
 {% block content %}
-  <div class="container">
-    <h1>Chat with PaLM 2 Large Language Model (LLM)</h1>
+  <div id="chat-outer">
+    {% include 'fragments/chat_sidebar.jinja' %}
     <div id="chat-container">
-      {% set messages = chat.message_set.all() %}
-      <div id="messages-container" class="mx-1 pt-1">{% include 'fragments/messages.jinja' %}</div>
-      <div class="add-message-container">
-        <form hx-post="{{ request.path }}"
-              hx-swap="beforeend"
-              hx-target="#messages-container"
-              id="chat-form">
-          <div class="row mx-0">
-            {{ form.message.label_tag(attrs={"class": "visually-hidden"}) }}
-            <div class="col px-1">
-              <div class="input-group">
-                {{ form.message }}
-                <button id="send-button" class="btn btn-outline-secondary" type="submit" aria-label="Send">
-                  <i class="bi bi-send"></i>
-                </button>
+      <div class="container">
+        {% set messages = chat.message_set.all() %}
+        <div id="messages-container" class="mx-1 pt-3">{% include 'fragments/messages.jinja' %}</div>
+        <div class="add-message-container">
+          <form hx-post="{{ request.path }}"
+                hx-swap="beforeend"
+                hx-target="#messages-container"
+                id="chat-form">
+            <div class="row mx-0">
+              {{ form.message.label_tag(attrs={"class": "visually-hidden"}) }}
+              <div class="col px-1">
+                <div class="input-group" id="chat-inputs">
+                  {{ form.message }}
+                  <button id="send-button"
+                          class="btn btn-outline-secondary"
+                          type="submit"
+                          aria-label="Send">
+                    <i class="bi bi-send"></i>
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        </form>
+          </form>
+        </div>
       </div>
     </div>
   </div>
@@ -34,4 +39,9 @@
     });
     document.getElementById('id_message').focus();
   </script>
+  <style>
+  #top-nav .container {
+    max-width: 100%;
+  }
+  </style>
 {% endblock content %}

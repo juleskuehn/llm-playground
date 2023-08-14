@@ -1,0 +1,24 @@
+<div id="sidebar" class="border-end p-3 overflow-auto">
+  <div>
+    <div class="offcanvas-body">
+      <a class="btn btn-outline-dark w-100 text-start"
+         href="{{ url("index") }}">
+        {# Bootstrap + icon #}
+        <i class="bi bi-plus-square me-2"></i>
+        New chat
+      </a>
+      {# Bootstrap unstyled list #}
+      <ul class="list-unstyled mt-3 mb-0">
+        {% for chat in user_chats %}
+          <li class="mb-1">
+            <a href="{{ url('chat', chat.id) }}"
+               class="text-dark text-decoration-none d-block w-100 border-bottom py-2">
+              <i class="bi bi-chat-left me-2"></i>
+              {{ chat.title }}
+              {# <span class="d-block text-muted small text-end">{{ chat.timestamp.strftime("%Y-%m-%d %H:%M") }}</span> #}
+            </a>
+          </li>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
