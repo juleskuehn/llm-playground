@@ -8,3 +8,4 @@ notifications-python-client
 langchain
 pydantic
 google-cloud-aiplatform
+Markdown

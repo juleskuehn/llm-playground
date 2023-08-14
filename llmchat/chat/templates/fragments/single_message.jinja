@@ -17,6 +17,6 @@
     </span>
   </div>
   <div class="message-blob">
-    <div class="message-text">{% if message.typing %}<div class="typing"> <span></span><span></span><span></span></div>{% else %}{{ message.message }}{% endif %}</div>
+    <div class="message-text">{% if message.typing %}<div class="typing"> <span></span><span></span><span></span></div>{% else %}{{ message.message | markdown | safe }}{% endif %}</div>
   </div>
 </div>

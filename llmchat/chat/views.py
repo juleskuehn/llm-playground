@@ -10,6 +10,7 @@ from langchain.llms import VertexAI
 from langchain.schema import HumanMessage, SystemMessage, AIMessage
 
 chat_llm = ChatVertexAI(max_output_tokens=1024)
+code_llm = ChatVertexAI(model_name="codechat-bison")
 text_llm = VertexAI()
 
 from chat.forms import MessageForm

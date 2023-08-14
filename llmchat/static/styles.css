@@ -1103,6 +1103,18 @@ body.highlight-invalid div.phac_aspc_form_autocomplete:has(input:invalid) {
   top: -1.75rem;
 }
 
+div.message-text p:last-child {
+  margin-bottom: 0;
+}
+
+.message-text pre code {
+  padding: 10px;
+  display: block;
+  border: solid 1px rgba(0,0,0,0.2);
+  border-radius: 5px;
+  background: rgba(255,255,255,0.5);
+}
+
 .typing {
   position: relative;
   display: inline-block;
