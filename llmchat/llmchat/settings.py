@@ -121,9 +121,9 @@ LOGIN_REDIRECT_URL = ""
 MAGICLINK_LOGIN_SENT_TEMPLATE_NAME = "auth/login_link_sent.jinja"
 MAGICLINK_LOGIN_FAILED_TEMPLATE_NAME = "auth/login_failed.jinja"
 MAGICLINK_REQUIRE_SIGNUP = False
-MAGICLINK_TOKEN_USES = 1  # M365 "clicks" links to check them, so must be > 1
-MAGICLINK_REQUIRE_SAME_IP = True  # Otherwise M365 checks will invalidate token
-MAGICLINK_REQUIRE_SAME_BROWSER = True  # As above
+MAGICLINK_TOKEN_USES = 3  # M365 "clicks" links to check them, so must be > 1
+MAGICLINK_REQUIRE_SAME_IP = False  # Otherwise M365 checks will invalidate token
+MAGICLINK_REQUIRE_SAME_BROWSER = False  # As above
 
 GC_NOTIFY_API_KEY = env("GC_NOTIFY_API_KEY")
 GC_NOTIFY_TEMPLATE_ID = env("GC_NOTIFY_TEMPLATE_ID")
