@@ -1,0 +1,42 @@
+{% extends 'base.jinja' %}
+{% block content %}
+  <div class="container py-3">
+    <div class="row">
+      <div class="col">
+        <h1 class="h3 mb-3">Upload documents</h1>
+      </div>
+      <div class="col-auto">
+        {# HTMX spinner icon #}
+        <div role="status" class="spinner-border text-primary" id="spinner">
+          <span class="visually-hidden">Saving changes</span>
+        </div>
+      </div>
+    </div>
+    <form hx-post="{{ request.path }}" hx-indicator="#spinner" enctype="multipart/form-data">
+      <div class="row">
+        <div class="col">{{ upload_form.file }}</div>
+        <div class="col-auto">
+          <button type="submit" class="btn btn-primary">Upload</button>
+        </div>
+      </div>
+    </form>
+    <hr>
+    <h2 class="h3 mb-3">My documents</h2>
+    {% for doc in documents %}
+      <div class="row">
+        <div class="col-8">
+          {{ doc.file.name }}
+        </div>
+        <div class="col-4 text-end">
+          <span class="text-muted">{{ doc.upload_finished_at.strftime('%Y-%m-%d %H:%M') }}</span>
+        </div>
+
+        {# <div class="col-auto">
+          <form hx-delete="{{ doc.url }}" hx-indicator="#spinner">
+            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+          </form>
+        </div> #}
+      </div>
+    {% endfor %}
+  </div>
+{% endblock content %}

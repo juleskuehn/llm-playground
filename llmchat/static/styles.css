@@ -1308,3 +1308,22 @@ div#sub-header .text-secondary {
 div#sub-header a {
   color: #0b66eb;
 }
+
+/* Saving spinner (indicator) */
+div.spinner-border {
+  display: none;
+}
+
+div.spinner-border.htmx-request {
+  display: block;
+  opacity: 0.4;
+}
+
+#spinner {
+  margin-bottom: -10px;
+  margin-right: 5px;
+}
+
+#spinner.htmx-request {
+  display: inline-block;
+}

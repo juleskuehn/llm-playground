@@ -35,7 +35,7 @@ env_file = os.path.join(BASE_DIR, "../.env")
 
 if os.path.isfile(env_file):
     # Use a local secret file, if provided
-    print('Loading .env file')
+    print("Loading .env file")
     env.read_env(env_file)
 # [START_EXCLUDE]
 elif os.getenv("TRAMPOLINE_CI", None):
@@ -181,6 +181,13 @@ if os.getenv("TRAMPOLINE_CI", None):
         }
     }
 
+STORAGES = {
+    "default": {"BACKEND": "storages.backends.gcloud.GoogleCloudStorage"},
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    },
+}
+GS_BUCKET_NAME = env("GS_BUCKET_NAME")
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators

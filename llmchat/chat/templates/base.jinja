@@ -38,7 +38,18 @@
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          {% block header_menu %}<!-- This block will be replaced by per-page overrides -->{% endblock %}
+          {% block header_menu %}
+            <ul class="navbar-nav flex-fill justify-content-start bold-links">
+              <li class="nav-item me-3">
+                <a class="nav-link {% if active_tab == 'chat' %}active{% endif %}"
+                  href="{{ url("index") }}">Chat</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link {% if active_tab == 'documents' %}active{% endif %}"
+                  href="{{ url("documents") }}">My documents</a>
+              </li>
+            </ul>
+          {% endblock %}
           <ul class="navbar-nav flex-fill justify-content-end">
             {#
             {% block lang_toggle %}

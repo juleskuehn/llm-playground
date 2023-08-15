@@ -4,6 +4,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import logout
 from django.http import HttpResponse
 from django.urls import reverse
+from django.utils import timezone
 
 from langchain.chat_models import ChatVertexAI
 from langchain.llms import VertexAI
@@ -13,8 +14,8 @@ chat_llm = ChatVertexAI(max_output_tokens=1024)
 code_llm = ChatVertexAI(model_name="codechat-bison")
 text_llm = VertexAI()
 
-from chat.forms import MessageForm
-from chat.models import Message, User, Chat
+from chat.forms import MessageForm, UploadForm
+from chat.models import Message, User, Chat, DocumentChunk, Document
 
 
 class IndexView(LoginRequiredMixin, TemplateView):
@@ -65,11 +66,12 @@ class ChatView(LoginRequiredMixin, TemplateView):
     # and returns HTML fragment with message + "LLM typing" indicator
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["chat"] = Chat.objects.get(id=kwargs["chat_id"])
+        context["active_tab"] = "chat"
         context["form"] = MessageForm()
         # Get non-empty chats for user
-        user_chats = Chat.objects.filter(user=self.request.user).order_by("-timestamp")
+        user_chats = Chat.objects.filter(user=self.request.user).order_by("-timestamp").prefetch_related("message_set")
         user_chats = [chat for chat in user_chats if chat.message_set.count() > 1]
+        context["chat"] = Chat.objects.get(id=kwargs["chat_id"])
         # Summarize chats into chat.title if not already set
         for chat in user_chats:
             if chat.title == "":
@@ -154,3 +156,29 @@ def summarize_chat(chat_id):
     {chat_text}
     TITLE: """
     return text_llm(prompt)
+
+
+class DocumentsView(LoginRequiredMixin, TemplateView):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["active_tab"] = "documents"
+        context["upload_form"] = UploadForm()
+        context["documents"] = Document.objects.filter(user=self.request.user)
+        return context
+
+    def post(self, request, *args, **kwargs):
+        form = UploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            instance = Document(
+                file=request.FILES["file"],
+                user=request.user,
+                upload_finished_at=timezone.now(),
+            )
+            instance.save()
+            response = HttpResponse()
+            response["HX-Redirect"] = reverse("documents")
+            return response
+        else:
+            return self.render_to_response({"form": form})
+
+    template_name = "documents.jinja"

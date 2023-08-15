@@ -9,3 +9,6 @@ langchain
 pydantic
 google-cloud-aiplatform
 Markdown
+pgvector
+google-cloud-storage
+django-storages[google]

@@ -18,7 +18,7 @@
 # [START gaestd_py_django_app_yaml]
 runtime: python310
 
-instance_class: F4
+instance_class: F4_1G
 
 env_variables:
   # This setting is used in settings.py to configure your ALLOWED_HOSTS

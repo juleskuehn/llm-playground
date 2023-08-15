@@ -51,9 +51,11 @@
     document.getElementById('id_message').focus();
     })();
     htmx.on('htmx:beforeSend', function(evt) {
-      /* Disable the textarea and submit button */
-      document.getElementById('id_message').disabled = true;
-      document.getElementById('send-button').disabled = true;
+      if (evt.srcElement == document.getElementById('chat-form')) {
+        /* Disable the textarea and submit button */
+        document.getElementById('id_message').disabled = true;
+        document.getElementById('send-button').disabled = true;
+      }
     });
   </script>
   <style>
