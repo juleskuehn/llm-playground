@@ -22,23 +22,41 @@ class IndexView(LoginRequiredMixin, TemplateView):
 
 
 def chat_response(request, chat_id):
-    messages = Message.objects.filter(chat_id=chat_id)
+    messages = (
+        Message.objects.filter(chat_id=chat_id)
+        .order_by("timestamp")
+        .prefetch_related("chat")
+    )
     chat_messages = [
         SystemMessage(
             content="You are a helpful general purpose AI. You respond to user queries correctly and harmlessly. You always reason step by step to ensure you get the correct answer, and ask for clarification when you need it.",
         )
     ]
-    for message in messages:
+    for i, message in enumerate(messages):
         if message.is_bot:
             chat_messages.append(AIMessage(content=message.message))
+        elif i > 0 and not messages[i - 1].is_bot:
+            chat_messages[-1].content += "\n" + message.message
         else:
             chat_messages.append(HumanMessage(content=message.message))
+    print(messages)
     bot_message = Message.objects.create(
         message=chat_llm(chat_messages).content,
         chat_id=chat_id,
         is_bot=True,
     )
-    return render(request, "fragments/waiting_message.jinja", {"message": bot_message})
+    chat = Chat.objects.get(id=chat_id)
+    add_chat_title = False
+    if chat.title == "" and len(messages) > 2:
+        add_chat_title = True
+        chat.title = summarize_chat(chat_id)
+        chat.save()
+
+    return render(
+        request,
+        "fragments/waiting_message.jinja",
+        {"message": bot_message, "add_chat_title": add_chat_title, "chat": chat},
+    )
 
 
 class ChatView(LoginRequiredMixin, TemplateView):
@@ -59,6 +77,14 @@ class ChatView(LoginRequiredMixin, TemplateView):
                 chat.save()
         context["user_chats"] = user_chats
         return context
+
+    # Validate that request.user is Chat.user
+    def dispatch(self, request, *args, **kwargs):
+        if "chat_id" in kwargs:
+            chat = Chat.objects.get(id=kwargs["chat_id"])
+            if not chat.user == request.user:
+                return HttpResponse(status=403)
+        return super().dispatch(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         form = MessageForm(request.POST)
@@ -86,6 +112,7 @@ class NewChatView(ChatView):
     """
     Creates a new chat on GET and renders the chat template
     """
+
     def get(self, request, *args, **kwargs):
         # Create a new chat
         chat = Chat.objects.create(user=request.user)
@@ -104,7 +131,7 @@ def delete_chat(request, chat_id, current_chat=None):
     chat = Chat.objects.get(id=chat_id)
     if not chat.user == request.user:
         return HttpResponse(status=403)
-    
+
     chat.delete()
     # Is this the currently open chat? If so, redirect away
     if current_chat == "True":

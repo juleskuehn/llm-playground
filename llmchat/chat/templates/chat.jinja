@@ -4,7 +4,7 @@
     {% include 'fragments/chat_sidebar.jinja' %}
     <div id="chat-container">
       <div class="container">
-        {% set messages = chat.message_set.all() %}
+        {% set messages = chat.message_set.all().order_by('timestamp') %}
         <div id="messages-container" class="mx-1 pt-3">
           {% if not messages %}
             <div id="no-messages-placeholder" class="text-muted">
@@ -40,13 +40,21 @@
     </div>
   </div>
   <script>
+    (function () {
+    const send_button = document.getElementById('send-button');
     /* Ctrl+Enter to submit */
     document.addEventListener('keydown', function (event) {
       if (event.ctrlKey && event.key === 'Enter') {
-        document.getElementById('send-button').click();
+        send_button.click();
       }
     });
     document.getElementById('id_message').focus();
+    })();
+    htmx.on('htmx:beforeSend', function(evt) {
+      /* Disable the textarea and submit button */
+      document.getElementById('id_message').disabled = true;
+      document.getElementById('send-button').disabled = true;
+    });
   </script>
   <style>
   #top-nav .container,

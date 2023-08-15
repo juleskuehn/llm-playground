@@ -3,7 +3,36 @@
   {% set message = {'is_bot': True, 'typing': True} %}
   {% include "fragments/single_message.jinja" %}
   {# Make another HTMX request to get the LLM response #}
-  <div class="d-none" hx-get="{{ url("chat_response", chat_id=chat_id) }}" hx-target="#message-typing" hx-swap="outerHTML" hx-trigger="load"></div>
+  <div class="d-none"
+       hx-get="{{ url("chat_response", chat_id=chat_id) }}"
+       hx-target="#message-typing"
+       hx-swap="outerHTML"
+       hx-trigger="load"></div>
+{% else %}
+<script>
+  document.getElementById('send-button').disabled = false;
+  document.getElementById('id_message').disabled = false;
+</script>
+{% endif %}
+{% if add_chat_title %}
+  {% set current = True %}
+  {% set loop = {"index": 0} %}
+  <li class="mb-1{% if current %} current fw-500{% endif %}"
+      hx-swap-oob="outerHTML"
+      id="new-chat-title">
+    <a href="{{ url('chat', chat.id) }}"
+       class="text-dark text-decoration-none d-block w-100 border-bottom py-2">
+      <i class="bi bi-chat-left me-2"></i>
+      {{ chat.title }}
+      {# <span class="d-block text-muted small text-end">{{ chat.timestamp.strftime("%Y-%m-%d %H:%M") }}</span> #}
+    </a>
+    {# HTMX delete button, only visible on hover #}
+    <button class="btn btn btn-outline delete-chat"
+            hx-delete="{{ url('delete_chat', chat_id=chat.id, current_chat=current) }}"
+            hx-target="#sidebar li:nth-child({{ loop.index }})">
+      <i class="bi bi-trash"></i>
+    </button>
+  </li>
 {% endif %}
 <script>
 // Scroll to the bottom of the messages

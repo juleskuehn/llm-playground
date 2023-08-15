@@ -1103,7 +1103,7 @@ body.highlight-invalid div.phac_aspc_form_autocomplete:has(input:invalid) {
   top: -1.75rem;
 }
 
-div.message-text p:last-child {
+div.message-text :last-child {
   margin-bottom: 0;
 }
 
@@ -1199,10 +1199,6 @@ div.message-text p:last-child {
 
 #chat-container .message-meta {
   font-size: smaller;
-}
-
-#chat-container .message-text {
-  white-space: pre-wrap;
 }
 
 #chat-saved-alert {
