@@ -8,6 +8,7 @@ from django.utils import timezone
 
 from chat.forms import MessageForm, UploadForm
 from chat.models import Message, User, Chat, DocumentChunk, Document
+from chat.llm_utils.embeddings import gcp_embeddings
 
 from langchain.chat_models import ChatVertexAI
 from langchain.llms import VertexAI
@@ -19,6 +20,7 @@ from langchain.document_loaders import TextLoader, PyPDFLoader
 
 from tempfile import NamedTemporaryFile
 import os
+import numpy as np
 
 chat_llm = ChatVertexAI(max_output_tokens=1024)
 code_llm = ChatVertexAI(model_name="codechat-bison")
@@ -244,3 +246,16 @@ def summarize(document):
 def full_text(request, doc_id):
     doc = Document.objects.get(id=doc_id)
     return HttpResponse("<div class='pre-line'>" + doc.full_text.strip() + "</div>")
+
+
+def generate_embeddings(request, doc_id):
+    doc = Document.objects.get(id=doc_id)
+    chunks = doc.chunks.all().order_by("chunk_number")
+    texts = chunks.values_list("text", flat=True)
+    embeddings = gcp_embeddings.embed_documents(texts)
+    for i, chunk in enumerate(chunks):
+        chunk.embedding = embeddings[i]
+    DocumentChunk.objects.bulk_update(chunks, ["embedding"])
+    doc.mean_embedding = np.mean(embeddings, axis=0)
+    doc.save()
+    return render(request, "fragments/embeddings_preview.jinja", {"doc": doc})

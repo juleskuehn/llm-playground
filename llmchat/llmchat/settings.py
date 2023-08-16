@@ -136,7 +136,13 @@ TEMPLATES = [
         "BACKEND": "django_jinja.backend.Jinja2",
         "DIRS": [],
         "APP_DIRS": True,
-        "OPTIONS": {},
+        "OPTIONS": {
+            "globals": {
+                "len": len,
+                "str": str,
+                "list": list,
+            },
+        },
     },
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",

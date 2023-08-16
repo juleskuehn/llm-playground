@@ -32,7 +32,7 @@
         </div>
       </div>
       <hr>
-      <div class="row">
+      <div class="row mb-3">
         <div class="col-2">Full text:</div>
         <div class="col">
           <button class="btn btn-sm btn-outline-secondary"
@@ -41,6 +41,22 @@
                   hx-swap="outerHTML">
             Show full text
           </button>
+        </div>
+      </div>
+      <hr>
+      <div class="row">
+        <div class="col-2">Embeddings:</div>
+        <div class="col">
+          {% if doc.mean_embedding is not none %}
+            {% include "fragments/embeddings_preview.jinja" %}
+          {% else %}
+            <button class="btn btn-sm btn-outline-secondary"
+                    type="button"
+                    hx-post="{{ url('embeddings', doc.id) }}"
+                    hx-swap="outerHTML">
+              Generate embeddings
+            </button>
+          {% endif %}
         </div>
       </div>
     </div>
