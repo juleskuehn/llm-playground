@@ -6,7 +6,7 @@ from django.http import HttpResponse
 from django.urls import reverse
 from django.utils import timezone
 
-from chat.forms import MessageForm, UploadForm
+from chat.forms import MessageForm, UploadForm, QueryForm
 from chat.models import Message, User, Chat, DocumentChunk, Document
 from chat.llm_utils.embeddings import gcp_embeddings
 
@@ -17,6 +17,7 @@ from langchain.docstore.document import Document as LcDocument
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.chains.summarize import load_summarize_chain
 from langchain.document_loaders import TextLoader, PyPDFLoader
+from pgvector.django import CosineDistance
 
 from tempfile import NamedTemporaryFile
 import os
@@ -186,6 +187,7 @@ class DocumentsView(LoginRequiredMixin, TemplateView):
         context["documents"] = Document.objects.filter(user=self.request.user).order_by(
             "-uploaded_at"
         )
+        context["query_form"] = QueryForm()
         return context
 
     def post(self, request, *args, **kwargs):
@@ -263,3 +265,30 @@ def generate_embeddings(request, doc_id):
     doc.mean_embedding = np.mean(embeddings, axis=0)
     doc.save()
     return render(request, "fragments/embeddings_preview.jinja", {"doc": doc})
+
+
+def query_embeddings(request):
+    query = request.GET.get("query")
+    if query is None:
+        return HttpResponse(status=400)
+    query_embedding = gcp_embeddings.embed_documents([query])[0]
+    user_docs = Document.objects.filter(user=request.user)
+    # Get the most similar documents (by mean_embedding cosine similarity)
+    documents_by_mean = user_docs.order_by(
+        CosineDistance("mean_embedding", query_embedding)
+    )[:3]
+    documents_by_summary = user_docs.order_by(
+        CosineDistance("summary_embedding", query_embedding)
+    )[:3]
+    chunks_by_embedding = DocumentChunk.objects.filter(document__in=user_docs).order_by(
+        CosineDistance("embedding", query_embedding)
+    )[:10]
+    return render(
+        request,
+        "fragments/query_results.jinja",
+        {
+            "chunks": chunks_by_embedding,
+            "documents_by_mean": documents_by_mean,
+            "documents_by_summary": documents_by_summary,
+        },
+    )

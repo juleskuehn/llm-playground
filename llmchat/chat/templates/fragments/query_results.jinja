@@ -1,0 +1,18 @@
+<h5>Top {{ len(documents_by_mean) }} documents (by mean)</h5>
+<ol>
+  {% for doc in documents_by_mean %}
+    <li><b>{{ doc.file.name }}</b></li>
+  {% endfor %}
+</ol>
+<h5>Top {{ len(documents_by_summary) }} documents (by summary)</h5>
+<ol>
+  {% for doc in documents_by_summary %}
+    <li><b>{{ doc.file.name }}:</b> {{ doc.summary }}</li>
+  {% endfor %}
+</ol>
+<h5>Top {{ len(chunks) }} chunks</h5>
+<ol>
+  {% for chunk in chunks %}
+    <li><b>{{ chunk.document.file.name }}:</b> {{ chunk.text }}</li>
+  {% endfor %}
+</ol>

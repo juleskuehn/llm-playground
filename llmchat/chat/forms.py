@@ -27,3 +27,11 @@ class UploadForm(forms.ModelForm):
         widgets = {
             "file": forms.FileInput(attrs={"class": "form-control"}),
         }
+
+
+class QueryForm(forms.Form):
+    query = forms.CharField(
+        label="Query",
+        max_length=1000,
+        widget=forms.Textarea(attrs={"rows": 1, "cols": 100, "class": "form-control"}),
+    )
