@@ -74,7 +74,7 @@ class Document(models.Model):
                 text = text[: -self.chunk_overlap]
 
         if len(chunks) > max_chunks:
-            text += f"... (truncated at {max_chunks} chunks)"
+            text += f"\n\n... (truncated at {max_chunks} chunks)"
         return text
 
 
