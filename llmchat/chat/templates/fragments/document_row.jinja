@@ -25,10 +25,17 @@
             <button class="btn btn-sm btn-outline-secondary"
                     type="button"
                     hx-post="{{ url('summary', doc.id) }}"
-                    hx-swap="outerHTML">
+                    hx-swap="outerHTML"
+                    hx-indicator="#summary-spinner-doc{{ doc.id }}">
               Generate summary
             </button>
           {% endif %}
+        </div>
+        <div class="col-auto">
+          {# HTMX spinner icon #}
+          <div role="status" class="spinner-border text-primary" id="summary-spinner-doc{{ doc.id }}">
+            <span class="visually-hidden">Saving changes</span>
+          </div>
         </div>
       </div>
       <hr>
@@ -38,9 +45,16 @@
           <button class="btn btn-sm btn-outline-secondary"
                   type="button"
                   hx-post="{{ url('full_text', doc.id) }}"
-                  hx-swap="outerHTML">
+                  hx-swap="outerHTML"
+                  hx-indicator="#fulltext-spinner-doc{{ doc.id }}">
             Show full text
           </button>
+        </div>
+        <div class="col-auto">
+          {# HTMX spinner icon #}
+          <div role="status" class="spinner-border text-primary" id="fulltext-spinner-doc{{ doc.id }}">
+            <span class="visually-hidden">Saving changes</span>
+          </div>
         </div>
       </div>
       <hr>
@@ -53,10 +67,17 @@
             <button class="btn btn-sm btn-outline-secondary"
                     type="button"
                     hx-post="{{ url('embeddings', doc.id) }}"
-                    hx-swap="outerHTML">
+                    hx-swap="outerHTML"
+                    hx-indicator="#embeddings-spinner-doc{{ doc.id }}">
               Generate embeddings
             </button>
           {% endif %}
+        </div>
+        <div class="col-auto">
+          {# HTMX spinner icon #}
+          <div role="status" class="spinner-border text-primary" id="embeddings-spinner-doc{{ doc.id }}">
+            <span class="visually-hidden">Saving changes</span>
+          </div>
         </div>
       </div>
     </div>

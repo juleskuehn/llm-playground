@@ -7,13 +7,13 @@
       </div>
       <div class="col-auto">
         {# HTMX spinner icon #}
-        <div role="status" class="spinner-border text-primary" id="spinner">
+        <div role="status" class="spinner-border text-primary" id="upload-spinner">
           <span class="visually-hidden">Saving changes</span>
         </div>
       </div>
     </div>
     <form hx-post="{{ request.path }}"
-          hx-indicator="#spinner"
+          hx-indicator="#upload-spinner"
           enctype="multipart/form-data"
           hx-swap="afterbegin"
           hx-target="#my-documents">

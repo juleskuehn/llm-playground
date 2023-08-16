@@ -64,12 +64,17 @@ class Document(models.Model):
         Return the full text of the document
         """
         text = ""
+        chunks = self.chunks.all().order_by("chunk_number")
+        max_chunks = 10
         for i, chunk in enumerate(
-            self.chunks.all().order_by("chunk_number").values_list("text", flat=True)
+            chunks[:max_chunks].values_list("text", flat=True)
         ):
             text += chunk
-            if i < len(self.chunks.all()) - 1:
+            if i < len(chunks) - 1:
                 text = text[: -self.chunk_overlap]
+
+        if len(chunks) > max_chunks:
+            text += f"... (truncated at {max_chunks} chunks)"
         return text
 
 

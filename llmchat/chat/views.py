@@ -199,7 +199,7 @@ class DocumentsView(LoginRequiredMixin, TemplateView):
             if uploaded_file.name.endswith(".pdf"):
                 loader = PyPDFLoader(temp_file.name)
             else:
-                loader = TextLoader(temp_file.name)
+                loader = TextLoader(temp_file.name, encoding='utf8')
             docs = loader.load()
             temp_file.close()
             os.unlink(temp_file.name)
@@ -230,6 +230,8 @@ def summary(request, doc_id):
     doc = Document.objects.get(id=doc_id)
     summary = summarize(doc)
     doc.summary = summary
+    summary_embedding = gcp_embeddings.embed_documents([summary])[0]
+    doc.summary_embedding = summary_embedding
     doc.save()
     return HttpResponse("<div class='pre-line'>" + summary.strip() + "</div>")
 

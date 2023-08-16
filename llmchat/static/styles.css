@@ -1312,20 +1312,13 @@ div#sub-header a {
 /* Saving spinner (indicator) */
 div.spinner-border {
   display: none;
-}
-
-div.spinner-border.htmx-request {
-  display: block;
-  opacity: 0.4;
-}
-
-#spinner {
   margin-bottom: -10px;
   margin-right: 5px;
 }
 
-#spinner.htmx-request {
+div.spinner-border.htmx-request {
   display: inline-block;
+  opacity: 0.4;
 }
 
 div.pre-line {
