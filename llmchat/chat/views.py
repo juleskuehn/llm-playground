@@ -244,11 +244,14 @@ def summary(request, doc_id):
 
 def summarize(document):
     docs = [
-        LcDocument(page_content=t.text)
-        for t in document.chunks.all().order_by("chunk_number")[:10]
+        LcDocument(page_content=document.file.name + '\n\n' + t.text if i == 0 else t.text)
+        for i, t in enumerate(document.chunks.all().order_by("chunk_number")[:10])
     ]
-    # Text summarization
-    return summarize_chain.run(docs)
+    summary = summarize_chain.run(docs)
+    # Sometimes the summarizer returns an empty string
+    if summary == "":
+        summary = document.file.name
+    return summary
 
 
 def full_text(request, doc_id):
@@ -275,10 +278,9 @@ def query_embeddings(request):
         return HttpResponse(status=400)
     query_embedding = gcp_embeddings.embed_documents([query])[0]
     user_docs = Document.objects.filter(user=request.user)
-    # Get the most similar documents (by mean_embedding cosine similarity)
-    documents_by_mean = user_docs.order_by(
-        CosineDistance("mean_embedding", query_embedding)
-    )[:3]
+    # documents_by_mean = user_docs.order_by(
+    #     CosineDistance("mean_embedding", query_embedding)
+    # )[:3]
     documents_by_summary = user_docs.order_by(
         CosineDistance("summary_embedding", query_embedding)
     )[:3]
@@ -290,7 +292,7 @@ def query_embeddings(request):
         "fragments/query_results.jinja",
         {
             "chunks": chunks_by_embedding,
-            "documents_by_mean": documents_by_mean,
+            # "documents_by_mean": documents_by_mean,
             "documents_by_summary": documents_by_summary,
         },
     )

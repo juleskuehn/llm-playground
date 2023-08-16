@@ -1,9 +1,9 @@
-<h5>Top {{ len(documents_by_mean) }} documents (by mean)</h5>
+{# <h5>Top {{ len(documents_by_mean) }} documents (by mean)</h5>
 <ol>
   {% for doc in documents_by_mean %}
     <li><b>{{ doc.file.name }}</b></li>
   {% endfor %}
-</ol>
+</ol> #}
 <h5>Top {{ len(documents_by_summary) }} documents (by summary)</h5>
 <ol>
   {% for doc in documents_by_summary %}
