@@ -35,6 +35,11 @@
         </div>
       </div>
     </div>
+    <div class="row">
+      <div class="col">
+        <p class="text-muted">Upload a document for question answering. <em>Do not upload protected information.</em></p>
+      </div>
+    </div>
     <form hx-post="{{ request.path }}"
           hx-indicator="#upload-spinner"
           enctype="multipart/form-data"
