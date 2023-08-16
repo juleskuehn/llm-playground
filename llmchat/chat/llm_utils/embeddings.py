@@ -6,8 +6,16 @@ https://github.com/GoogleCloudPlatform/generative-ai/blob/main/language/examples
 import time
 from typing import List
 from pydantic import BaseModel
-from langchain.embeddings import VertexAIEmbeddings
 from pgvector.django import CosineDistance
+
+from langchain.embeddings import VertexAIEmbeddings
+from langchain.chains.question_answering import load_qa_chain
+from langchain.chains.qa_with_sources import load_qa_with_sources_chain
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.chains.summarize import load_summarize_chain
+from langchain.chat_models import ChatVertexAI
+from langchain.llms import VertexAI
+
 
 from chat.models import Message, User, Chat, DocumentChunk, Document
 
@@ -59,6 +67,18 @@ gcp_embeddings = CustomVertexAIEmbeddings(
     num_instances_per_batch=EMBEDDING_NUM_BATCH,
 )
 
+chat_llm = ChatVertexAI(max_output_tokens=1024)
+code_llm = ChatVertexAI(model_name="codechat-bison")
+text_llm = VertexAI()
+summarize_chain = load_summarize_chain(text_llm, chain_type="map_reduce")
+CHUNK_SIZE = 1000
+CHUNK_OVERLAP = 100
+text_splitter = RecursiveCharacterTextSplitter(
+    chunk_size=CHUNK_SIZE,
+    chunk_overlap=CHUNK_OVERLAP,
+)
+
+
 def get_docs_chunks_by_embedding(request, query):
     query_embedding = gcp_embeddings.embed_documents([query])[0]
     user_docs = Document.objects.filter(user=request.user)
@@ -72,3 +92,17 @@ def get_docs_chunks_by_embedding(request, query):
         CosineDistance("embedding", query_embedding)
     )[:10]
     return documents_by_summary, chunks_by_embedding
+
+
+def get_qa_response(query, documents, return_sources=True):
+    if return_sources:
+        chain = load_qa_with_sources_chain(text_llm, chain_type="stuff")
+        response = chain(
+            {"input_documents": documents, "question": query}, return_only_outputs=True
+        )
+        print(response)
+        return response["output_text"]
+    else:
+        chain = load_qa_chain(text_llm, chain_type="stuff")
+        response = chain.run(input_documents=documents, question=query)
+        return response

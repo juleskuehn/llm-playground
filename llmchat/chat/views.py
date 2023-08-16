@@ -8,31 +8,27 @@ from django.utils import timezone
 
 from chat.forms import MessageForm, UploadForm, QueryForm, QAForm
 from chat.models import Message, User, Chat, DocumentChunk, Document
-from chat.llm_utils.embeddings import gcp_embeddings, get_docs_chunks_by_embedding
+from chat.llm_utils.embeddings import (
+    gcp_embeddings,
+    get_docs_chunks_by_embedding,
+    get_qa_response,
+    chat_llm,
+    text_llm,
+    code_llm,
+    summarize_chain,
+    CHUNK_SIZE,
+    CHUNK_OVERLAP,
+    text_splitter,
+)
 
-from langchain.chat_models import ChatVertexAI
-from langchain.llms import VertexAI
 from langchain.schema import HumanMessage, SystemMessage, AIMessage
 from langchain.docstore.document import Document as LcDocument
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.chains.summarize import load_summarize_chain
+
 from langchain.document_loaders import TextLoader, PyPDFLoader
-from langchain.chains import RetrievalQAWithSourcesChain, RetrievalQA
 
 from tempfile import NamedTemporaryFile
 import os
 import numpy as np
-
-chat_llm = ChatVertexAI(max_output_tokens=1024)
-code_llm = ChatVertexAI(model_name="codechat-bison")
-text_llm = VertexAI()
-summarize_chain = load_summarize_chain(text_llm, chain_type="map_reduce")
-CHUNK_SIZE = 1000
-CHUNK_OVERLAP = 100
-text_splitter = RecursiveCharacterTextSplitter(
-    chunk_size=CHUNK_SIZE,
-    chunk_overlap=CHUNK_OVERLAP,
-)
 
 
 class IndexView(LoginRequiredMixin, TemplateView):
@@ -245,7 +241,9 @@ def summary(request, doc_id):
 
 def summarize(document):
     docs = [
-        LcDocument(page_content=document.file.name + '\n\n' + t.text if i == 0 else t.text)
+        LcDocument(
+            page_content=document.file.name + "\n\n" + t.text if i == 0 else t.text
+        )
         for i, t in enumerate(document.chunks.all().order_by("chunk_number")[:10])
     ]
     summary = summarize_chain.run(docs)
@@ -288,9 +286,31 @@ def query_embeddings(request):
         },
     )
 
+
 def qa_embeddings(request):
     query = request.GET.get("query")
     if query is None:
         return HttpResponse(status=400)
-    documents_by_summary, chunks_by_embedding = get_docs_chunks_by_embedding(request, query)
-    return HttpResponse('todo')
+    documents_by_summary, chunks_by_embedding = get_docs_chunks_by_embedding(
+        request, query
+    )
+    response = get_qa_response(
+        query,
+        [
+            LcDocument(page_content=doc.summary, metadata={"source": doc.file.name})
+            for doc in documents_by_summary
+        ]
+        + [
+            LcDocument(
+                page_content=chunk.text, metadata={"source": chunk.document.file.name}
+            )
+            for chunk in chunks_by_embedding
+        ],
+    )
+    if "\nSOURCES" in response:
+        response = (
+            response[: response.index("\nSOURCES")].replace("\n", "<br>")
+            + "<br><br><b>Sources</b>: "
+            + response[response.index("\nSOURCES") + 9 :].replace("\n", "<br>")
+        )
+    return HttpResponse(response)
