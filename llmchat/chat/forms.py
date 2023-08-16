@@ -35,3 +35,10 @@ class QueryForm(forms.Form):
         max_length=1000,
         widget=forms.Textarea(attrs={"rows": 1, "cols": 100, "class": "form-control"}),
     )
+
+class QAForm(forms.Form):
+    query = forms.CharField(
+        label="Question",
+        max_length=1000,
+        widget=forms.Textarea(attrs={"rows": 1, "cols": 100, "class": "form-control"}),
+    )

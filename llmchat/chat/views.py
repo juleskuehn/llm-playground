@@ -6,9 +6,9 @@ from django.http import HttpResponse
 from django.urls import reverse
 from django.utils import timezone
 
-from chat.forms import MessageForm, UploadForm, QueryForm
+from chat.forms import MessageForm, UploadForm, QueryForm, QAForm
 from chat.models import Message, User, Chat, DocumentChunk, Document
-from chat.llm_utils.embeddings import gcp_embeddings
+from chat.llm_utils.embeddings import gcp_embeddings, get_docs_chunks_by_embedding
 
 from langchain.chat_models import ChatVertexAI
 from langchain.llms import VertexAI
@@ -17,7 +17,7 @@ from langchain.docstore.document import Document as LcDocument
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.chains.summarize import load_summarize_chain
 from langchain.document_loaders import TextLoader, PyPDFLoader
-from pgvector.django import CosineDistance
+from langchain.chains import RetrievalQAWithSourcesChain, RetrievalQA
 
 from tempfile import NamedTemporaryFile
 import os
@@ -188,6 +188,7 @@ class DocumentsView(LoginRequiredMixin, TemplateView):
             "-uploaded_at"
         )
         context["query_form"] = QueryForm()
+        context["qa_form"] = QAForm()
         return context
 
     def post(self, request, *args, **kwargs):
@@ -276,17 +277,7 @@ def query_embeddings(request):
     query = request.GET.get("query")
     if query is None:
         return HttpResponse(status=400)
-    query_embedding = gcp_embeddings.embed_documents([query])[0]
-    user_docs = Document.objects.filter(user=request.user)
-    # documents_by_mean = user_docs.order_by(
-    #     CosineDistance("mean_embedding", query_embedding)
-    # )[:3]
-    documents_by_summary = user_docs.order_by(
-        CosineDistance("summary_embedding", query_embedding)
-    )[:3]
-    chunks_by_embedding = DocumentChunk.objects.filter(document__in=user_docs).order_by(
-        CosineDistance("embedding", query_embedding)
-    )[:10]
+    documents_by_summary, chunks_by_embedding = get_docs_chunks_by_embedding(query)
     return render(
         request,
         "fragments/query_results.jinja",
@@ -296,3 +287,10 @@ def query_embeddings(request):
             "documents_by_summary": documents_by_summary,
         },
     )
+
+def qa_embeddings(request):
+    query = request.GET.get("query")
+    if query is None:
+        return HttpResponse(status=400)
+    documents_by_summary, chunks_by_embedding = get_docs_chunks_by_embedding(request, query)
+    return HttpResponse('todo')

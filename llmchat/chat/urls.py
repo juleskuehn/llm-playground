@@ -14,4 +14,5 @@ urlpatterns = [
     path("full_text/<int:doc_id>", views.full_text, name="full_text"),
     path("embeddings/<int:doc_id>", views.generate_embeddings, name="embeddings"),
     path("query_embeddings", views.query_embeddings, name="query_embeddings"),
+    path("qa_embeddings", views.qa_embeddings, name="qa_embeddings"),
 ]

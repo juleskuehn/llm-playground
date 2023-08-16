@@ -7,6 +7,9 @@ import time
 from typing import List
 from pydantic import BaseModel
 from langchain.embeddings import VertexAIEmbeddings
+from pgvector.django import CosineDistance
+
+from chat.models import Message, User, Chat, DocumentChunk, Document
 
 
 # Utility functions for Embeddings API with rate limiting
@@ -55,3 +58,17 @@ gcp_embeddings = CustomVertexAIEmbeddings(
     requests_per_minute=EMBEDDING_QPM,
     num_instances_per_batch=EMBEDDING_NUM_BATCH,
 )
+
+def get_docs_chunks_by_embedding(request, query):
+    query_embedding = gcp_embeddings.embed_documents([query])[0]
+    user_docs = Document.objects.filter(user=request.user)
+    # documents_by_mean = user_docs.order_by(
+    #     CosineDistance("mean_embedding", query_embedding)
+    # )[:3]
+    documents_by_summary = user_docs.order_by(
+        CosineDistance("summary_embedding", query_embedding)
+    )[:3]
+    chunks_by_embedding = DocumentChunk.objects.filter(document__in=user_docs).order_by(
+        CosineDistance("embedding", query_embedding)
+    )[:10]
+    return documents_by_summary, chunks_by_embedding
