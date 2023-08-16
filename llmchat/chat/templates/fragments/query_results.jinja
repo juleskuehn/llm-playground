@@ -4,6 +4,7 @@
     <li><b>{{ doc.file.name }}</b></li>
   {% endfor %}
 </ol> #}
+<p><em>Similarity search results are used by the Q&A bot above. Results are ordered by cosine distance between the query embedding and document embeddings.</em></p>
 <h5>Top {{ len(documents_by_summary) }} documents (by summary)</h5>
 <ol>
   {% for doc in documents_by_summary %}

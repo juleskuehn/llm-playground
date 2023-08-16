@@ -79,18 +79,32 @@ text_splitter = RecursiveCharacterTextSplitter(
 )
 
 
-def get_docs_chunks_by_embedding(request, query):
+def get_docs_chunks_by_embedding(request, query, max_distance=None):
     query_embedding = gcp_embeddings.embed_documents([query])[0]
     user_docs = Document.objects.filter(user=request.user)
     # documents_by_mean = user_docs.order_by(
     #     CosineDistance("mean_embedding", query_embedding)
     # )[:3]
-    documents_by_summary = user_docs.order_by(
-        CosineDistance("summary_embedding", query_embedding)
-    )[:3]
-    chunks_by_embedding = DocumentChunk.objects.filter(document__in=user_docs).order_by(
-        CosineDistance("embedding", query_embedding)
-    )[:10]
+    if max_distance is None:
+        documents_by_summary = user_docs.order_by(
+            CosineDistance("summary_embedding", query_embedding)
+        )[:3]
+        chunks_by_embedding = (
+            DocumentChunk.objects.filter(document__in=user_docs)
+            .order_by(CosineDistance("embedding", query_embedding))[:10]
+            .prefetch_related("document")
+        )
+    else:
+        documents_by_summary = user_docs.alias(
+            distance=CosineDistance("summary_embedding", query_embedding)
+        ).filter(distance__lt=max_distance)[:3]
+        chunks_by_embedding = (
+            DocumentChunk.objects.filter(document__in=user_docs)
+            .alias(distance=CosineDistance("embedding", query_embedding))
+            .filter(distance__lt=max_distance)
+            .prefetch_related("document")
+        )[:10]
+
     return documents_by_summary, chunks_by_embedding
 
 

@@ -5,6 +5,7 @@ from django.contrib.auth import logout
 from django.http import HttpResponse
 from django.urls import reverse
 from django.utils import timezone
+from django.db import transaction
 
 from chat.forms import MessageForm, UploadForm, QueryForm, QAForm
 from chat.models import Message, User, Chat, DocumentChunk, Document
@@ -228,14 +229,15 @@ class DocumentsView(LoginRequiredMixin, TemplateView):
 
 
 def summary(request, doc_id):
-    doc = Document.objects.get(id=doc_id)
+    doc = Document.objects.filter(id=doc_id).prefetch_related("chunks").first()
     summary = summarize(doc)
-    doc.summary = summary
     # Add the document filename to the summary for embedding
     summary_for_embedding = doc.file.name + "\n\n" + summary
     summary_embedding = gcp_embeddings.embed_documents([summary_for_embedding])[0]
-    doc.summary_embedding = summary_embedding
-    doc.save()
+    Document.objects.filter(id=doc_id).update(
+        summary=summary,
+        summary_embedding=summary_embedding,
+    )
     return HttpResponse("<div class='pre-line'>" + summary.strip() + "</div>")
 
 
@@ -259,15 +261,15 @@ def full_text(request, doc_id):
 
 
 def generate_embeddings(request, doc_id):
-    doc = Document.objects.get(id=doc_id)
+    doc = Document.objects.filter(id=doc_id).prefetch_related("chunks").first()
     chunks = doc.chunks.all().order_by("chunk_number")
     texts = chunks.values_list("text", flat=True)
     embeddings = gcp_embeddings.embed_documents(texts)
     for i, chunk in enumerate(chunks):
         chunk.embedding = embeddings[i]
     DocumentChunk.objects.bulk_update(chunks, ["embedding"])
-    doc.mean_embedding = np.mean(embeddings, axis=0)
-    doc.save()
+    Document.objects.filter(id=doc_id).update(mean_embedding=np.mean(embeddings, axis=0))
+    doc = Document.objects.filter(id=doc_id).prefetch_related("chunks").first()
     return render(request, "fragments/embeddings_preview.jinja", {"doc": doc})
 
 
@@ -275,7 +277,9 @@ def query_embeddings(request):
     query = request.GET.get("query")
     if query is None:
         return HttpResponse(status=400)
-    documents_by_summary, chunks_by_embedding = get_docs_chunks_by_embedding(query)
+    documents_by_summary, chunks_by_embedding = get_docs_chunks_by_embedding(
+        request, query
+    )
     return render(
         request,
         "fragments/query_results.jinja",
@@ -292,7 +296,7 @@ def qa_embeddings(request):
     if query is None:
         return HttpResponse(status=400)
     documents_by_summary, chunks_by_embedding = get_docs_chunks_by_embedding(
-        request, query
+        request, query, max_distance=0.5
     )
     response = get_qa_response(
         query,

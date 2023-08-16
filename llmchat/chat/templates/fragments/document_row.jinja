@@ -1,6 +1,6 @@
 <div class="accordion-item">
   <h2 class="accordion-header" id="document-heading-{{ doc.id }}">
-    <button class="accordion-button{% if not new %} collapsed{% endif %}"
+    <button class="accordion-button collapsed"
             type="button"
             data-bs-toggle="collapse"
             data-bs-target="#document-panel-{{ doc.id }}"
@@ -13,8 +13,9 @@
     </button>
   </h2>
   <div id="document-panel-{{ doc.id }}"
-       class="accordion-collapse collapse{% if new %} show{% endif %}"
-       aria-labelledby="document-heading-{{ doc.id }}">
+       class="accordion-collapse collapse"
+       aria-labelledby="document-heading-{{ doc.id }}"
+       data-bs-parent="#my-documents">
     <div class="accordion-body">
       <div class="row mb-3">
         <div class="col-2">Summary:</div>
@@ -88,6 +89,7 @@
 {% if new %}
   <script>
     /* Click the buttons to generate the summary and embeddings */
+    document.querySelector("#document-heading-{{ doc.id }} button").click();
     document.getElementById("generate-summary-doc{{ doc.id }}").click();
     document.getElementById("generate-embeddings-doc{{ doc.id }}").click();
   </script>

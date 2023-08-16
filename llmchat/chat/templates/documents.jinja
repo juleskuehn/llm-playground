@@ -3,6 +3,29 @@
   <div class="container py-3">
     <div class="row">
       <div class="col">
+        <h2 class="h3 mb-3">Document Q&A</h2>
+      </div>
+      <div class="col-auto">
+        <div role="status" class="spinner-border text-primary" id="qa-spinner">
+          <span class="visually-hidden">Searching</span>
+        </div>
+      </div>
+    </div>
+    <form hx-get="{{ url("qa_embeddings") }}"
+          hx-indicator="#qa-spinner"
+          hx-swap="innerHTML"
+          hx-target="#qa-results">
+      <div class="row">
+        <div class="col">{{ qa_form.query }}</div>
+        <div class="col-auto">
+          <button type="submit" class="btn btn-primary">Ask bot</button>
+        </div>
+      </div>
+    </form>
+    <div id="qa-results" class="mt-3"></div>
+    <hr>
+    <div class="row">
+      <div class="col">
         <h1 class="h3 mb-3">Upload documents (PDF or plain text only)</h1>
       </div>
       <div class="col-auto">
@@ -54,27 +77,5 @@
       </div>
     </form>
     <div id="query-results" class="mt-3"></div>
-    <div class="row">
-      <div class="col">
-        <h2 class="h3 mb-3">Question answering</h2>
-      </div>
-      <div class="col-auto">
-        <div role="status" class="spinner-border text-primary" id="qa-spinner">
-          <span class="visually-hidden">Searching</span>
-        </div>
-      </div>
-    </div>
-    <form hx-get="{{ url("qa_embeddings") }}"
-          hx-indicator="#qa-spinner"
-          hx-swap="innerHTML"
-          hx-target="#qa-results">
-      <div class="row">
-        <div class="col">{{ qa_form.query }}</div>
-        <div class="col-auto">
-          <button type="submit" class="btn btn-primary">Ask bot</button>
-        </div>
-      </div>
-    </form>
-    <div id="qa-results" class="mt-3"></div>
   </div>
 {% endblock content %}

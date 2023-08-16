@@ -93,7 +93,7 @@ class DocumentChunk(models.Model):
 
     def __str__(self):
         return (
-            f"DocumentChunk {self.id}: {self.document.name} Chunk {self.chunk_number}"
+            f"DocumentChunk {self.id}: {self.document.file.name} Chunk {self.chunk_number}"
         )
 
 
