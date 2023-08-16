@@ -221,7 +221,9 @@ class DocumentsView(LoginRequiredMixin, TemplateView):
                     text=chunk,
                     chunk_number=i,
                 )
-            return render(request, "fragments/document_row.jinja", {"doc": instance})
+            return render(
+                request, "fragments/document_row.jinja", {"doc": instance, "new": True}
+            )
         else:
             return self.render_to_response({"form": form})
 
