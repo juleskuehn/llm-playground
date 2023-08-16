@@ -6,16 +6,30 @@ from django.http import HttpResponse
 from django.urls import reverse
 from django.utils import timezone
 
+from chat.forms import MessageForm, UploadForm
+from chat.models import Message, User, Chat, DocumentChunk, Document
+
 from langchain.chat_models import ChatVertexAI
 from langchain.llms import VertexAI
 from langchain.schema import HumanMessage, SystemMessage, AIMessage
+from langchain.docstore.document import Document as LcDocument
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.chains.summarize import load_summarize_chain
+from langchain.document_loaders import TextLoader, PyPDFLoader
+
+from tempfile import NamedTemporaryFile
+import os
 
 chat_llm = ChatVertexAI(max_output_tokens=1024)
 code_llm = ChatVertexAI(model_name="codechat-bison")
 text_llm = VertexAI()
-
-from chat.forms import MessageForm, UploadForm
-from chat.models import Message, User, Chat, DocumentChunk, Document
+summarize_chain = load_summarize_chain(text_llm, chain_type="map_reduce")
+CHUNK_SIZE = 1000
+CHUNK_OVERLAP = 100
+text_splitter = RecursiveCharacterTextSplitter(
+    chunk_size=CHUNK_SIZE,
+    chunk_overlap=CHUNK_OVERLAP,
+)
 
 
 class IndexView(LoginRequiredMixin, TemplateView):
@@ -69,7 +83,11 @@ class ChatView(LoginRequiredMixin, TemplateView):
         context["active_tab"] = "chat"
         context["form"] = MessageForm()
         # Get non-empty chats for user
-        user_chats = Chat.objects.filter(user=self.request.user).order_by("-timestamp").prefetch_related("message_set")
+        user_chats = (
+            Chat.objects.filter(user=self.request.user)
+            .order_by("-timestamp")
+            .prefetch_related("message_set")
+        )
         user_chats = [chat for chat in user_chats if chat.message_set.count() > 1]
         context["chat"] = Chat.objects.get(id=kwargs["chat_id"])
         # Summarize chats into chat.title if not already set
@@ -163,22 +181,66 @@ class DocumentsView(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         context["active_tab"] = "documents"
         context["upload_form"] = UploadForm()
-        context["documents"] = Document.objects.filter(user=self.request.user)
+        context["documents"] = Document.objects.filter(user=self.request.user).order_by(
+            "-uploaded_at"
+        )
         return context
 
     def post(self, request, *args, **kwargs):
         form = UploadForm(request.POST, request.FILES)
         if form.is_valid():
+            uploaded_file = request.FILES["file"]
+            file_bytes = uploaded_file.file
+            temp_file = NamedTemporaryFile(delete=False)
+            temp_file.write(file_bytes.read())
+            temp_file.seek(0)
+            if uploaded_file.name.endswith(".pdf"):
+                loader = PyPDFLoader(temp_file.name)
+            else:
+                loader = TextLoader(temp_file.name)
+            docs = loader.load()
+            temp_file.close()
+            os.unlink(temp_file.name)
             instance = Document(
-                file=request.FILES["file"],
+                file=uploaded_file,
                 user=request.user,
-                upload_finished_at=timezone.now(),
+                uploaded_at=timezone.now(),
+                chunk_overlap=CHUNK_OVERLAP,
+                title=uploaded_file.name,
             )
             instance.save()
-            response = HttpResponse()
-            response["HX-Redirect"] = reverse("documents")
-            return response
+            text = "\n\n".join([doc.page_content for doc in docs])
+            chunks = text_splitter.split_text(text)
+            for i, chunk in enumerate(chunks):
+                DocumentChunk.objects.create(
+                    document=instance,
+                    text=chunk,
+                    chunk_number=i,
+                )
+            return render(request, "fragments/document_row.jinja", {"doc": instance})
         else:
             return self.render_to_response({"form": form})
 
     template_name = "documents.jinja"
+
+
+def summary(request, doc_id):
+    doc = Document.objects.get(id=doc_id)
+    summary = summarize(doc)
+    doc.summary = summary
+    doc.save()
+    return HttpResponse("<div class='pre-line'>" + summary.strip() + "</div>")
+
+
+def summarize(document):
+    docs = [
+        LcDocument(page_content=t.text)
+        for t in document.chunks.all().order_by("chunk_number")[:10]
+    ]
+    # Text summarization
+    return summarize_chain.run(docs)
+
+
+def full_text(request, doc_id):
+    doc = Document.objects.get(id=doc_id)
+    return HttpResponse("<div class='pre-line'>" + doc.full_text.strip() + "</div>")

@@ -12,3 +12,5 @@ Markdown
 pgvector
 google-cloud-storage
 django-storages[google]
+transformers
+pypdf

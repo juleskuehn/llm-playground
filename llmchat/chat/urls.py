@@ -10,4 +10,6 @@ urlpatterns = [
     path("chat/chat_response/<int:chat_id>", views.chat_response, name="chat_response"),
     path("chat/delete/<int:chat_id>/<str:current_chat>", views.delete_chat, name="delete_chat"),
     path("documents/", views.DocumentsView.as_view(), name="documents"),
+    path("summary/<int:doc_id>", views.summary, name="summary"),
+    path("full_text/<int:doc_id>", views.full_text, name="full_text"),
 ]

@@ -1327,3 +1327,7 @@ div.spinner-border.htmx-request {
 #spinner.htmx-request {
   display: inline-block;
 }
+
+div.pre-line {
+  white-space: pre-line;
+}

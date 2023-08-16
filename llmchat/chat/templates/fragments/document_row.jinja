@@ -1,0 +1,48 @@
+<div class="accordion-item">
+  <h2 class="accordion-header" id="document-heading-{{ doc.id }}">
+    <button class="accordion-button collapsed"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#document-panel-{{ doc.id }}"
+            aria-expanded="false"
+            aria-controls="document-panel-{{ doc.id }}">
+      <div class="col fw-semibold">{{ doc.file.name }}</div>
+      <div class="col-auto text-end me-3">
+        <span class="text-muted">{{ doc.uploaded_at.strftime("%Y-%m-%d %H:%M") }}</span>
+      </div>
+    </button>
+  </h2>
+  <div id="document-panel-{{ doc.id }}"
+       class="accordion-collapse collapse"
+       aria-labelledby="document-heading-{{ doc.id }}">
+    <div class="accordion-body">
+      <div class="row mb-3">
+        <div class="col-2">Summary:</div>
+        <div class="col">
+          {% if doc.summary != "" %}
+            <div class='pre-line'>{{ doc.summary.strip() }}</div>
+          {% else %}
+            <button class="btn btn-sm btn-outline-secondary"
+                    type="button"
+                    hx-post="{{ url('summary', doc.id) }}"
+                    hx-swap="outerHTML">
+              Generate summary
+            </button>
+          {% endif %}
+        </div>
+      </div>
+      <hr>
+      <div class="row">
+        <div class="col-2">Full text:</div>
+        <div class="col">
+          <button class="btn btn-sm btn-outline-secondary"
+                  type="button"
+                  hx-post="{{ url('full_text', doc.id) }}"
+                  hx-swap="outerHTML">
+            Show full text
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
