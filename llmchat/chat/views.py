@@ -5,11 +5,12 @@ from django.contrib.auth import logout
 from django.http import HttpResponse
 from django.urls import reverse
 from django.utils import timezone
-from django.db import transaction
+from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
 
-from chat.forms import MessageForm, UploadForm, QueryForm, QAForm
-from chat.models import Message, User, Chat, DocumentChunk, Document
-from chat.llm_utils.embeddings import (
+from chat.forms import MessageForm, UploadForm, QueryForm, QAForm, SettingsForm
+from chat.models import Message, User, Chat, DocumentChunk, Document, UserSettings
+from chat.llm_utils.vertex import (
     gcp_embeddings,
     get_docs_chunks_by_embedding,
     get_qa_response,
@@ -44,7 +45,7 @@ def chat_response(request, chat_id):
     )
     chat_messages = [
         SystemMessage(
-            content="You are a helpful general purpose AI. You respond to user queries correctly and harmlessly. You always reason step by step to ensure you get the correct answer, and ask for clarification when you need it.",
+            content=request.user.settings.system_prompt or settings.CHAT_SYSTEM_PROMPT,
         )
     ]
     for i, message in enumerate(messages):
@@ -54,9 +55,9 @@ def chat_response(request, chat_id):
             chat_messages[-1].content += "\n" + message.message
         else:
             chat_messages.append(HumanMessage(content=message.message))
-    print(messages)
+    llm = code_llm if request.user.settings.chat_model == "codechat-bison" else chat_llm
     bot_message = Message.objects.create(
-        message=chat_llm(chat_messages).content,
+        message=llm(chat_messages).content,
         chat_id=chat_id,
         is_bot=True,
     )
@@ -82,6 +83,13 @@ class ChatView(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         context["active_tab"] = "chat"
         context["form"] = MessageForm()
+        try:
+            user_settings = self.request.user.settings
+        except ObjectDoesNotExist:
+            user_settings = UserSettings.objects.create(user=self.request.user)
+        if not user_settings.system_prompt:
+            user_settings.system_prompt = settings.CHAT_SYSTEM_PROMPT
+        context["settings_form"] = SettingsForm(instance=user_settings)
         # Get non-empty chats for user
         user_chats = (
             Chat.objects.filter(user=self.request.user)
@@ -143,6 +151,18 @@ class NewChatView(ChatView):
 def logout_view(request):
     logout(request)
     return redirect("index")
+
+
+def chat_settings(request):
+    # Update user settings
+    if request.method == "POST":
+        form = SettingsForm(request.POST)
+        if form.is_valid():
+            user_settings = request.user.settings
+            user_settings.system_prompt = form.cleaned_data["system_prompt"]
+            user_settings.chat_model = form.cleaned_data["chat_model"]
+            user_settings.save()
+            return HttpResponse(status=200)
 
 
 def delete_chat(request, chat_id, current_chat=None):
@@ -241,20 +261,6 @@ def summary(request, doc_id):
     return HttpResponse("<div class='pre-line'>" + summary.strip() + "</div>")
 
 
-def summarize(document):
-    docs = [
-        LcDocument(
-            page_content=document.file.name + "\n\n" + t.text if i == 0 else t.text
-        )
-        for i, t in enumerate(document.chunks.all().order_by("chunk_number")[:10])
-    ]
-    summary = summarize_chain.run(docs)
-    # Sometimes the summarizer returns an empty string
-    if summary == "":
-        summary = document.file.name
-    return summary
-
-
 def full_text(request, doc_id):
     doc = Document.objects.get(id=doc_id)
     return HttpResponse("<div class='pre-line'>" + doc.full_text.strip() + "</div>")
@@ -268,7 +274,9 @@ def generate_embeddings(request, doc_id):
     for i, chunk in enumerate(chunks):
         chunk.embedding = embeddings[i]
     DocumentChunk.objects.bulk_update(chunks, ["embedding"])
-    Document.objects.filter(id=doc_id).update(mean_embedding=np.mean(embeddings, axis=0))
+    Document.objects.filter(id=doc_id).update(
+        mean_embedding=np.mean(embeddings, axis=0)
+    )
     doc = Document.objects.filter(id=doc_id).prefetch_related("chunks").first()
     return render(request, "fragments/embeddings_preview.jinja", {"doc": doc})
 

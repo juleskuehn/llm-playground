@@ -239,3 +239,8 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+CHAT_SYSTEM_PROMPT = """You are a helpful general purpose AI.
+You respond to user queries correctly and harmlessly.
+You always reason step by step to ensure you get the correct answer, \
+and ask for clarification when you need it."""

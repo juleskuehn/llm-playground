@@ -66,9 +66,7 @@ class Document(models.Model):
         text = ""
         chunks = self.chunks.all().order_by("chunk_number")
         max_chunks = 10
-        for i, chunk in enumerate(
-            chunks[:max_chunks].values_list("text", flat=True)
-        ):
+        for i, chunk in enumerate(chunks[:max_chunks].values_list("text", flat=True)):
             text += chunk
             if i < len(chunks) - 1:
                 text = text[: -self.chunk_overlap]
@@ -92,9 +90,7 @@ class DocumentChunk(models.Model):
     embedding = VectorField(dimensions=768, null=True)  # PaLM embedding
 
     def __str__(self):
-        return (
-            f"DocumentChunk {self.id}: {self.document.file.name} Chunk {self.chunk_number}"
-        )
+        return f"DocumentChunk {self.id}: {self.document.file.name} Chunk {self.chunk_number}"
 
 
 class DocumentTag(models.Model):
@@ -102,3 +98,18 @@ class DocumentTag(models.Model):
 
     def __str__(self):
         return f"DocumentTag {self.id}: {self.tag}"
+
+
+class UserSettings(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="settings")
+    chat_model = models.CharField(
+        max_length=255,
+        default="chat-bison",
+        choices=[
+            ("chat-bison", "Google PaLM chat-bison"),
+            ("codechat-bison", "Google PaLM chat-bison (code)"),
+        ],
+    )
+    system_prompt = models.TextField(null=True)
+    max_output_tokens = models.IntegerField(default=1024)
+    temperature = models.FloatField(default=0)

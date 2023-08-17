@@ -1,12 +1,26 @@
-<div id="sidebar" class="border-end p-3 overflow-auto">
+<div id="sidebar" class="border-end p-3">
   <div>
-    <div class="offcanvas-body">
-      <a class="btn btn-outline-dark w-100 text-start"
-         href="{{ url("index") }}">
-        {# Bootstrap + icon #}
-        <i class="bi bi-plus-square me-2"></i>
-        New chat
-      </a>
+    <div class="offcanvas-body" style="overflow-x:hidden;">
+      <div class="row">
+        <div class="col">
+          <a class="btn btn-outline-dark w-100 text-start"
+             href="{{ url("index") }}">
+            {# Bootstrap + icon #}
+            <i class="bi bi-plus-square me-2"></i>
+            New chat
+          </a>
+        </div>
+        <div class="col-auto ps-0">
+          {# Invoke bootstrap modal for settings #}
+          <button type="button"
+                  data-bs-toggle="modal"
+                  data-bs-target="#settings-modal"
+                  class="btn btn-outline-dark">
+            <i class="bi bi-gear"></i>
+            <span class="visually-hidden">Settings</span>
+          </button>
+        </div>
+      </div>
       {# Bootstrap unstyled list #}
       <ul class="list-unstyled mt-3 mb-0" id="chat-list">
         {# Placeholder for new chat title, once 3 messages are received #}
@@ -23,11 +37,13 @@
             {# HTMX delete button, only visible on hover #}
             <button class="btn btn btn-outline delete-chat"
                     hx-delete="{{ url('delete_chat', chat_id=chat.id, current_chat=current) }}"
-                    hx-target="#sidebar li:nth-child({{ loop.index + 1 }})">  {# + 1 because of the first placeholder item #}
+                    hx-target="#sidebar li:nth-child({{ loop.index + 1 }})">
+              {# + 1 because of the first placeholder item #}
               <i class="bi bi-trash"></i>
             </button>
           </li>
         {% endfor %}
+        </ul>
       </div>
     </div>
   </div>
