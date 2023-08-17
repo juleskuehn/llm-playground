@@ -16,7 +16,6 @@
 {% endif %}
 {% if add_chat_title %}
   {% set current = True %}
-  {% set loop = {"index": 0} %}
   <li class="mb-1{% if current %} current fw-500{% endif %}"
       hx-swap-oob="outerHTML"
       id="new-chat-title">
@@ -29,7 +28,7 @@
     {# HTMX delete button, only visible on hover #}
     <button class="btn btn btn-outline delete-chat"
             hx-delete="{{ url('delete_chat', chat_id=chat.id, current_chat=current) }}"
-            hx-target="#sidebar li:nth-child({{ loop.index }})">
+            hx-target="#new-chat-title">
       <i class="bi bi-trash"></i>
     </button>
   </li>

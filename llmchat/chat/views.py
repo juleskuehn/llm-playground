@@ -43,9 +43,12 @@ def chat_response(request, chat_id):
         .order_by("timestamp")
         .prefetch_related("chat")
     )
+    system_prompt = request.user.settings.system_prompt
+    if system_prompt is None:
+        system_prompt = settings.CHAT_SYSTEM_PROMPT
     chat_messages = [
         SystemMessage(
-            content=request.user.settings.system_prompt or settings.CHAT_SYSTEM_PROMPT,
+            content=system_prompt,
         )
     ]
     for i, message in enumerate(messages):
@@ -87,9 +90,10 @@ class ChatView(LoginRequiredMixin, TemplateView):
             user_settings = self.request.user.settings
         except ObjectDoesNotExist:
             user_settings = UserSettings.objects.create(user=self.request.user)
-        if not user_settings.system_prompt:
+        if user_settings.system_prompt is None:
             user_settings.system_prompt = settings.CHAT_SYSTEM_PROMPT
         context["settings_form"] = SettingsForm(instance=user_settings)
+        context["default_system_prompt"] = settings.CHAT_SYSTEM_PROMPT
         # Get non-empty chats for user
         user_chats = (
             Chat.objects.filter(user=self.request.user)
@@ -162,7 +166,10 @@ def chat_settings(request):
             user_settings.system_prompt = form.cleaned_data["system_prompt"]
             user_settings.chat_model = form.cleaned_data["chat_model"]
             user_settings.save()
-            return HttpResponse(status=200)
+            response = HttpResponse(status=200)
+            # Add message to response to be displayed by HTMX
+            response["HX-Trigger"] = "settings-updated"
+            return response
 
 
 def delete_chat(request, chat_id, current_chat=None):
@@ -259,6 +266,20 @@ def summary(request, doc_id):
         summary_embedding=summary_embedding,
     )
     return HttpResponse("<div class='pre-line'>" + summary.strip() + "</div>")
+
+
+def summarize(document):
+    docs = [
+        LcDocument(
+            page_content=document.file.name + "\n\n" + t.text if i == 0 else t.text
+        )
+        for i, t in enumerate(document.chunks.all().order_by("chunk_number")[:10])
+    ]
+    summary = summarize_chain.run(docs)
+    # Sometimes the summarizer returns an empty string
+    if summary == "":
+        summary = document.file.name
+    return summary
 
 
 def full_text(request, doc_id):

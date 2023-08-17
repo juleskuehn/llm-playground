@@ -110,6 +110,6 @@ class UserSettings(models.Model):
             ("codechat-bison", "Google PaLM chat-bison (code)"),
         ],
     )
-    system_prompt = models.TextField(null=True)
+    system_prompt = models.TextField(null=True, blank=True)
     max_output_tokens = models.IntegerField(default=1024)
     temperature = models.FloatField(default=0)
