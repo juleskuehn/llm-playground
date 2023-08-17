@@ -35,16 +35,49 @@
             </div>
             <div class="col">{{ settings_form.system_prompt }}</div>
           </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Save changes</button>
-        </div>
-      </form>
+          {# Show advanced settings toggle #}
+          <button class="btn btn-link p-0 my-3"
+                  type="button"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#advanced-settings"
+                  aria-expanded="false"
+                  aria-controls="advanced-settings">
+            <span>Advanced settings</span>
+            <i class="bi bi-chevron-down"></i>
+          </button>
+          {# Advanced settings #}
+          <div id="advanced-settings" class="collapse">
+            {# Max tokens number text input #}
+            <div class="row">
+              <div class="col-4">
+                {{ settings_form.max_output_tokens.label_tag() }}
+                {# <div class="text-secondary">Default 1024</div> #}
+              </div>
+              <div class="col-4">{{ settings_form.max_output_tokens }}</div>
+            </div>
+            {# Temperature range slider #}
+            <div class="row my-3">
+              <div class="col-4">
+                {{ settings_form.temperature.label_tag() }}
+                {# <div class="text-secondary">Default 0 (more accurate)</div> #}
+              </div>
+              <div class="col">
+                <div>{{ settings_form.temperature }}</div>
+              </div>
+            </div>
+            <p class="text-muted">
+              Higher temperatures make the model more creative. Set to zero for more accurate results.
+            </p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Save changes</button>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
-</div>
-<script>
+  <script>
   (function() {
     const reset_prompt_btn = document.getElementById('reset_prompt');
     const system_prompt = document.getElementById('id_system_prompt');
@@ -52,4 +85,4 @@
       system_prompt.value = "{{ default_system_prompt|escapejs }}";
     });
   })();
-</script>
+  </script>

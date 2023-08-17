@@ -25,7 +25,7 @@ from chat.llm_utils.vertex import (
 
 from langchain.schema import HumanMessage, SystemMessage, AIMessage
 from langchain.docstore.document import Document as LcDocument
-
+from langchain.chat_models import ChatVertexAI
 from langchain.document_loaders import TextLoader, PyPDFLoader
 
 from tempfile import NamedTemporaryFile
@@ -58,7 +58,14 @@ def chat_response(request, chat_id):
             chat_messages[-1].content += "\n" + message.message
         else:
             chat_messages.append(HumanMessage(content=message.message))
-    llm = code_llm if request.user.settings.chat_model == "codechat-bison" else chat_llm
+    llm = (
+        code_llm
+        if request.user.settings.chat_model == "codechat-bison"
+        else ChatVertexAI(
+            max_output_tokens=request.user.settings.max_output_tokens,
+            temperature=request.user.settings.temperature,
+        )
+    )
     bot_message = Message.objects.create(
         message=llm(chat_messages).content,
         chat_id=chat_id,
@@ -165,6 +172,8 @@ def chat_settings(request):
             user_settings = request.user.settings
             user_settings.system_prompt = form.cleaned_data["system_prompt"]
             user_settings.chat_model = form.cleaned_data["chat_model"]
+            user_settings.max_output_tokens = form.cleaned_data["max_output_tokens"]
+            user_settings.temperature = form.cleaned_data["temperature"]
             user_settings.save()
             response = HttpResponse(status=200)
             # Add message to response to be displayed by HTMX
