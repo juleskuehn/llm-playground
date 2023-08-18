@@ -16,4 +16,5 @@ urlpatterns = [
     path("query_embeddings", views.query_embeddings, name="query_embeddings"),
     path("qa_embeddings", views.qa_embeddings, name="qa_embeddings"),
     path("chat_settings", views.chat_settings, name="chat_settings"),
+    path("_ah/warmup", views.warmup, name="warmup"),
 ]

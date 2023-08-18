@@ -164,6 +164,10 @@ def logout_view(request):
     return redirect("index")
 
 
+def warmup(request):
+    return HttpResponse(status=200)
+
+
 def chat_settings(request):
     # Update user settings
     if request.method == "POST":

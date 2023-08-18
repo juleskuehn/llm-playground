@@ -37,3 +37,15 @@ handlers:
   script: auto
 # [END gaestd_py_django_app_yaml]
 # [END django_app]
+
+# Keep at least one instance alive to prevent long first request latency.
+inbound_services:
+- warmup
+
+automatic_scaling:
+  target_cpu_utilization: 0.6
+  min_instances: 1
+  max_instances: 100
+  min_pending_latency: 30ms
+  max_pending_latency: automatic
+  max_concurrent_requests: 50
