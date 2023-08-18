@@ -69,8 +69,8 @@ gcp_embeddings = CustomVertexAIEmbeddings(
 
 text_llm = VertexAI(max_output_tokens=1024)
 summarize_chain = load_summarize_chain(text_llm, chain_type="map_reduce")
-CHUNK_SIZE = 1000
-CHUNK_OVERLAP = 100
+CHUNK_SIZE = 2000
+CHUNK_OVERLAP = 200
 text_splitter = RecursiveCharacterTextSplitter(
     chunk_size=CHUNK_SIZE,
     chunk_overlap=CHUNK_OVERLAP,

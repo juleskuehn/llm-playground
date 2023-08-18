@@ -37,43 +37,38 @@ class Chat(models.Model):
         return f"Chat {self.id}: {self.title}"
 
 
+def user_directory_path(instance, filename):
+    # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
+    return "user_{0}/{1}".format(instance.user.username.split('@')[0], filename)
+
+
 class Document(models.Model):
     """
     Metadata for a document uploaded to GCP storage
     """
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
-    file = models.FileField(null=True)
+    file = models.FileField(null=True, upload_to=user_directory_path)
     uploaded_at = models.DateTimeField(blank=True, null=True)
     indexed_at = models.DateTimeField(blank=True, null=True)
     title = models.CharField(max_length=255, blank=True, default="")
+    original_filename = models.CharField(max_length=255, blank=True, default="")
     summary = models.TextField(blank=True, default="")
     summary_embedding = VectorField(dimensions=768, null=True)  # PaLM embedding
     mean_embedding = VectorField(dimensions=768, null=True)  # PaLM embedding
     tags = models.ManyToManyField("DocumentTag", related_name="documents")
     chunk_overlap = models.IntegerField(
-        default=0
+        default=200
     )  # Number of characters to overlap between chunks
+    chunk_size = models.IntegerField(default=2000)  # Number of characters per chunk
+    text = models.TextField(blank=True, default="")
 
     def __str__(self):
-        return f"Document {self.id}: {self.file.name}"
-
+        return f"Document {self.id}: {self.original_filename}"
+    
     @property
-    def full_text(self):
-        """
-        Return the full text of the document
-        """
-        text = ""
-        chunks = self.chunks.all().order_by("chunk_number")
-        max_chunks = 10
-        for i, chunk in enumerate(chunks[:max_chunks].values_list("text", flat=True)):
-            text += chunk
-            if i < len(chunks) - 1:
-                text = text[: -self.chunk_overlap]
-
-        if len(chunks) > max_chunks:
-            text += f"\n\n... (truncated at {max_chunks} chunks)"
-        return text
+    def name(self):
+        return self.file.name.split('/')[-1]
 
 
 class DocumentChunk(models.Model):
@@ -84,17 +79,17 @@ class DocumentChunk(models.Model):
     document = models.ForeignKey(
         Document, on_delete=models.CASCADE, related_name="chunks"
     )
-    text = models.TextField()
     chunk_number = models.IntegerField()
     page_number = models.IntegerField(null=True)  # Some document loaders support this
     embedding = VectorField(dimensions=768, null=True)  # PaLM embedding
+    text = models.TextField(blank=True, default="")
 
     def __str__(self):
         return f"DocumentChunk {self.id}: {self.document.file.name} Chunk {self.chunk_number}"
 
-
 class DocumentTag(models.Model):
     tag = models.CharField(max_length=255)
+    user_generated = models.BooleanField(default=True)
 
     def __str__(self):
         return f"DocumentTag {self.id}: {self.tag}"

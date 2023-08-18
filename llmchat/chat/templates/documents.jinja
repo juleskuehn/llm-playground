@@ -52,9 +52,9 @@
         </div>
       </div>
     </form>
-    <hr>
-    <h2 class="h3 mb-3">My documents</h2>
-    <div class="accordion" id="my-documents">
+    {# <hr> #}
+    {# <h2 class="h3 mb-3">My documents</h2> #}
+    <div class="accordion mt-3" id="my-documents">
       {% for doc in documents %}
         {% include 'fragments/document_row.jinja' %}
       {% endfor %}

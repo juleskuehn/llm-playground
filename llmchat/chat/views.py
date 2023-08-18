@@ -86,7 +86,12 @@ def chat_response(request, chat_id):
         )
     chat = Chat.objects.get(id=chat_id)
     add_chat_title = False
-    if chat.title == "" and (len(messages) > 2 or not is_chat_model):
+    # Title the chat and add it to the sidebar if there's sufficient context to do so
+    if chat.title == "" and (
+        len(messages) > 2
+        or not is_chat_model
+        or len(" ".join([m.content for m in chat_messages])) > 300
+    ):
         add_chat_title = True
         chat.title = summarize_chat(chat_id)
         chat.save()
@@ -240,6 +245,14 @@ class DocumentsView(LoginRequiredMixin, TemplateView):
         context["query_form"] = QueryForm()
         context["qa_form"] = QAForm()
         return context
+    
+    def delete(self, request, *args, **kwargs):
+        document = Document.objects.get(id=kwargs["doc_id"])
+        if document.user == request.user:
+            document.delete()
+            return HttpResponse(status=200)
+        else:
+            return HttpResponse(status=403)
 
     def post(self, request, *args, **kwargs):
         form = UploadForm(request.POST, request.FILES)
@@ -256,22 +269,22 @@ class DocumentsView(LoginRequiredMixin, TemplateView):
             docs = loader.load()
             temp_file.close()
             os.unlink(temp_file.name)
+            text = "\n\n".join([doc.page_content for doc in docs])
+            # Delete any existing documents with the same original_filename
+            Document.objects.filter(
+                user=request.user, original_filename=uploaded_file.name
+            ).delete()
             instance = Document(
                 file=uploaded_file,
                 user=request.user,
                 uploaded_at=timezone.now(),
                 chunk_overlap=CHUNK_OVERLAP,
+                chunk_size=CHUNK_SIZE,
                 title=uploaded_file.name,
+                original_filename=uploaded_file.name,
+                text=text,
             )
             instance.save()
-            text = "\n\n".join([doc.page_content for doc in docs])
-            chunks = text_splitter.split_text(text)
-            for i, chunk in enumerate(chunks):
-                DocumentChunk.objects.create(
-                    document=instance,
-                    text=chunk,
-                    chunk_number=i,
-                )
             return render(
                 request, "fragments/document_row.jinja", {"doc": instance, "new": True}
             )
@@ -282,24 +295,31 @@ class DocumentsView(LoginRequiredMixin, TemplateView):
 
 
 def summary(request, doc_id):
-    doc = Document.objects.filter(id=doc_id).prefetch_related("chunks").first()
+    doc = Document.objects.filter(id=doc_id).first()
+    title = generate_title(doc)
     summary = summarize(doc)
     # Add the document filename to the summary for embedding
-    summary_for_embedding = doc.file.name + "\n\n" + summary
+    summary_for_embedding = title + "\n" + doc.file.name + "\n\n" + summary
     summary_embedding = gcp_embeddings.embed_documents([summary_for_embedding])[0]
     Document.objects.filter(id=doc_id).update(
         summary=summary,
+        title=title,
         summary_embedding=summary_embedding,
     )
-    return HttpResponse("<div class='pre-line'>" + summary.strip() + "</div>")
+    return HttpResponse(
+        f"""
+        <div class='fw-semibold'>{title}</div>
+        <div class='pre-line'>{summary.strip()}</div>
+        <script>document.getElementById("generate-embeddings-doc{ doc.id }").click();</script>
+    """
+    )
 
 
 def summarize(document):
     docs = [
         LcDocument(
-            page_content=document.file.name + "\n\n" + t.text if i == 0 else t.text
+            page_content=document.file.name + document.text[:10000],
         )
-        for i, t in enumerate(document.chunks.all().order_by("chunk_number")[:10])
     ]
     summary = summarize_chain.run(docs)
     # Sometimes the summarizer returns an empty string
@@ -308,15 +328,41 @@ def summarize(document):
     return summary
 
 
+def generate_title(document):
+    if len(document.text) < 10:
+        return document.file.name
+    text = f"Filename: {document.file.name}\n\nContent (first 5,000 characters): {document.text[:5000]}"
+    prompt = f"""
+    Write a concise title (1-5 words) for the following document. You must respond with at least one word:
+    {text}
+    1-5 WORD TITLE: """
+    return text_llm(prompt)[:255]
+
+
 def full_text(request, doc_id):
     doc = Document.objects.get(id=doc_id)
-    return HttpResponse("<div class='pre-line'>" + doc.full_text.strip() + "</div>")
+    return HttpResponse("<div class='pre-line'>" + doc.text.strip() + "</div>")
 
 
 def generate_embeddings(request, doc_id):
-    doc = Document.objects.filter(id=doc_id).prefetch_related("chunks").first()
+    doc = Document.objects.filter(id=doc_id).first()
+    chunks = text_splitter.split_text(doc.text)
+    for i, chunk in enumerate(chunks):
+        DocumentChunk.objects.create(
+            document=doc,
+            chunk_number=i,
+            text=chunk,
+        )
     chunks = doc.chunks.all().order_by("chunk_number")
     texts = chunks.values_list("text", flat=True)
+    # Add some extra context to each chunk, e.g. filename, title, summary, tags
+    texts = [
+        """Filename: {doc.file.name}
+Document title: {doc.title}
+Document summary: {doc.summary}\n
+Chunk content: {text}"""
+        for text in texts
+    ]
     embeddings = gcp_embeddings.embed_documents(texts)
     for i, chunk in enumerate(chunks):
         chunk.embedding = embeddings[i]
