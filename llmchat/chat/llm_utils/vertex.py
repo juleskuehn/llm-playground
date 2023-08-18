@@ -67,8 +67,6 @@ gcp_embeddings = CustomVertexAIEmbeddings(
     num_instances_per_batch=EMBEDDING_NUM_BATCH,
 )
 
-chat_llm = ChatVertexAI(max_output_tokens=1024)
-code_llm = ChatVertexAI(model_name="codechat-bison", max_output_tokens=1024)
 text_llm = VertexAI(max_output_tokens=1024)
 summarize_chain = load_summarize_chain(text_llm, chain_type="map_reduce")
 CHUNK_SIZE = 1000

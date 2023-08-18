@@ -102,12 +102,14 @@ class DocumentTag(models.Model):
 
 class UserSettings(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="settings")
-    chat_model = models.CharField(
+    model_name = models.CharField(
         max_length=255,
         default="chat-bison",
         choices=[
             ("chat-bison", "Google PaLM chat-bison"),
-            ("codechat-bison", "Google PaLM chat-bison (code)"),
+            ("codechat-bison", "Google PaLM codechat-bison"),
+            ("text-bison", "Google PaLM text-bison"),
+            ("code-bison", "Google PaLM code-bison"),
         ],
     )
     system_prompt = models.TextField(null=True, blank=True)

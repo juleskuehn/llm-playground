@@ -14,9 +14,7 @@ from chat.llm_utils.vertex import (
     gcp_embeddings,
     get_docs_chunks_by_embedding,
     get_qa_response,
-    chat_llm,
     text_llm,
-    code_llm,
     summarize_chain,
     CHUNK_SIZE,
     CHUNK_OVERLAP,
@@ -26,6 +24,7 @@ from chat.llm_utils.vertex import (
 from langchain.schema import HumanMessage, SystemMessage, AIMessage
 from langchain.docstore.document import Document as LcDocument
 from langchain.chat_models import ChatVertexAI
+from langchain.llms import VertexAI
 from langchain.document_loaders import TextLoader, PyPDFLoader
 
 from tempfile import NamedTemporaryFile
@@ -43,37 +42,51 @@ def chat_response(request, chat_id):
         .order_by("timestamp")
         .prefetch_related("chat")
     )
-    system_prompt = request.user.settings.system_prompt
-    if system_prompt is None:
-        system_prompt = settings.CHAT_SYSTEM_PROMPT
-    chat_messages = [
-        SystemMessage(
-            content=system_prompt,
+    user_settings = request.user.settings
+    is_chat_model = "chat" in user_settings.model_name
+    if is_chat_model:
+        system_prompt = user_settings.system_prompt
+        if system_prompt is None:
+            system_prompt = settings.CHAT_SYSTEM_PROMPT
+        chat_messages = [
+            SystemMessage(
+                content=system_prompt,
+            )
+        ]
+        for i, message in enumerate(messages):
+            if message.is_bot:
+                chat_messages.append(AIMessage(content=message.message))
+            elif i > 0 and not messages[i - 1].is_bot:
+                chat_messages[-1].content += "\n" + message.message
+            else:
+                chat_messages.append(HumanMessage(content=message.message))
+    else:
+        # Only one prompt for non-chat models
+        chat_messages = messages.first().message
+    if not is_chat_model and len(messages) > 2:
+        bot_message = Message.objects.create(
+            message="Non-chat models only support one prompt. Please start a new chat or switch to a chat model.",
+            chat_id=chat_id,
+            is_bot=True,
         )
-    ]
-    for i, message in enumerate(messages):
-        if message.is_bot:
-            chat_messages.append(AIMessage(content=message.message))
-        elif i > 0 and not messages[i - 1].is_bot:
-            chat_messages[-1].content += "\n" + message.message
-        else:
-            chat_messages.append(HumanMessage(content=message.message))
-    llm = (
-        code_llm
-        if request.user.settings.chat_model == "codechat-bison"
-        else ChatVertexAI(
-            max_output_tokens=request.user.settings.max_output_tokens,
-            temperature=request.user.settings.temperature,
+    else:
+        is_code_model = "code" in user_settings.model_name
+        llm_class = ChatVertexAI if is_chat_model else VertexAI
+        max_tokens = 2048 if is_code_model else 1024
+        max_tokens = min(max_tokens, user_settings.max_output_tokens)
+        llm = llm_class(
+            model_name=user_settings.model_name,
+            max_output_tokens=max_tokens,
+            temperature=user_settings.temperature,
         )
-    )
-    bot_message = Message.objects.create(
-        message=llm(chat_messages).content,
-        chat_id=chat_id,
-        is_bot=True,
-    )
+        bot_message = Message.objects.create(
+            message=llm(chat_messages).content if is_chat_model else llm(chat_messages),
+            chat_id=chat_id,
+            is_bot=True,
+        )
     chat = Chat.objects.get(id=chat_id)
     add_chat_title = False
-    if chat.title == "" and len(messages) > 2:
+    if chat.title == "" and (len(messages) > 2 or not is_chat_model):
         add_chat_title = True
         chat.title = summarize_chat(chat_id)
         chat.save()
@@ -175,7 +188,7 @@ def chat_settings(request):
         if form.is_valid():
             user_settings = request.user.settings
             user_settings.system_prompt = form.cleaned_data["system_prompt"]
-            user_settings.chat_model = form.cleaned_data["chat_model"]
+            user_settings.model_name = form.cleaned_data["model_name"]
             user_settings.max_output_tokens = form.cleaned_data["max_output_tokens"]
             user_settings.temperature = form.cleaned_data["temperature"]
             user_settings.save()

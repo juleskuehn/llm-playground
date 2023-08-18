@@ -17,10 +17,6 @@
       </div>
       <form hx-post="{{ url("chat_settings") }}" hx-swap="none">
         <div class="modal-body">
-          <div class="row mb-3">
-            <div class="col-4">{{ settings_form.chat_model.label_tag() }}</div>
-            <div class="col">{{ settings_form.chat_model }}</div>
-          </div>
           <div class="row">
             <div class="col-4">
               {{ settings_form.system_prompt.label_tag() }}
@@ -47,6 +43,13 @@
           </button>
           {# Advanced settings #}
           <div id="advanced-settings" class="collapse">
+            <div class="row mb-3">
+              <div class="col-4">{{ settings_form.model_name.label_tag() }}</div>
+              <div class="col">{{ settings_form.model_name }}</div>
+            </div>
+            <p class="text-muted">
+              See <a href="https://cloud.google.com/vertex-ai/docs/generative-ai/learn/models#foundation_models" target="blank">Google Cloud documentation</a> for model details. Generally, you should use "chat-bison".
+            </p>
             {# Max tokens number text input #}
             <div class="row">
               <div class="col-4">
@@ -55,6 +58,9 @@
               </div>
               <div class="col-4">{{ settings_form.max_output_tokens }}</div>
             </div>
+            <p class="text-muted">
+              Limits tokens in response (3 tokens ~= 1 word). Max 1024 except for code models (2048).
+            </p>
             {# Temperature range slider #}
             <div class="row my-3">
               <div class="col-4">

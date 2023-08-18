@@ -51,12 +51,12 @@ class QAForm(forms.Form):
 class SettingsForm(forms.ModelForm):
     class Meta:
         model = UserSettings
-        fields = ["system_prompt", "chat_model", "temperature", "max_output_tokens"]
+        fields = ["system_prompt", "model_name", "temperature", "max_output_tokens"]
         widgets = {
             "system_prompt": forms.Textarea(
                 attrs={"rows": 5, "cols": 100, "class": "form-control"}
             ),
-            "chat_model": forms.Select(attrs={"class": "form-select"}),
+            "model_name": forms.Select(attrs={"class": "form-select"}),
             # Slider to select temperature between 0 and 1
             "temperature": forms.NumberInput(
                 attrs={
@@ -72,7 +72,7 @@ class SettingsForm(forms.ModelForm):
                 attrs={
                     "type": "number",
                     "min": 128,
-                    "max": 1024,
+                    "max": 2048,
                     "step": 1,
                     "class": "form-control",
                 }
