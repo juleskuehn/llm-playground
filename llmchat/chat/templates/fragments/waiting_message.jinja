@@ -9,10 +9,10 @@
        hx-swap="outerHTML"
        hx-trigger="load"></div>
 {% else %}
-<script>
+  <script>
   document.getElementById('send-button').disabled = false;
   document.getElementById('id_message').disabled = false;
-</script>
+  </script>
 {% endif %}
 {% if add_chat_title %}
   {% set current = True %}
@@ -49,5 +49,10 @@
   if (no_messages_placeholder) {
     no_messages_placeholder.remove();
   }
+  document.querySelectorAll(
+    '#messages-container pre code'
+  ).forEach((block) => {
+    hljs.highlightBlock(block);
+  });
 })();
 </script>
