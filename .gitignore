@@ -133,7 +133,8 @@ dmypy.json
 node_modules
 
 # ignore uncompressed database
-data/backups/phac.sql
+*.sql*
+
 # ignore all dot files, while are only used for generated ERD png files
 *.dot
 

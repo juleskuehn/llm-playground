@@ -9,7 +9,7 @@
           {% if not messages %}
             <div id="no-messages-placeholder" class="text-muted">
               <p class="text-center">Type a message to start chatting with the large language model (LLM), and press Ctrl+Enter to send.</p>
-              <p class="text-center">While this environment is private to PHAC, do not enter protected information.</p>
+              {# <p class="text-center">Do not enter protected information.</p> #}
             </div>
           {% else %}
             {% include 'fragments/messages.jinja' %}

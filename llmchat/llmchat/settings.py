@@ -10,9 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
-from pathlib import Path
 import io
 import os
+from pathlib import Path
 from urllib.parse import urlparse
 
 import environ
@@ -67,7 +67,6 @@ SECRET_KEY = env("SECRET_KEY")
 # Change this to "False" when you are ready for production
 DEBUG = env("DEBUG")
 
-
 # [START gaestd_py_django_csrf]
 # SECURITY WARNING: It's recommended that you use this when
 # running in production. The URL will be known once you first deploy
@@ -115,8 +114,7 @@ AUTHENTICATION_BACKENDS = (
     "django.contrib.auth.backends.ModelBackend",
 )
 
-LOGIN_URL = "phac_only_login"
-
+LOGIN_URL = "email_login"
 LOGIN_REDIRECT_URL = ""
 MAGICLINK_LOGIN_SENT_TEMPLATE_NAME = "auth/login_link_sent.jinja"
 MAGICLINK_LOGIN_FAILED_TEMPLATE_NAME = "auth/login_failed.jinja"
@@ -124,10 +122,17 @@ MAGICLINK_REQUIRE_SIGNUP = False
 MAGICLINK_TOKEN_USES = 3  # M365 "clicks" links to check them, so must be > 1
 MAGICLINK_REQUIRE_SAME_IP = False  # Otherwise M365 checks will invalidate token
 MAGICLINK_REQUIRE_SAME_BROWSER = False  # As above
+MAGICLINK_METHOD = env("MAGICLINK_METHOD", default="django_smtp")
+ALLOWED_EMAIL_DOMAINS = env.list("ALLOWED_EMAIL_DOMAINS", default=["*"])
+GC_NOTIFY_API_KEY = env("GC_NOTIFY_API_KEY", default=None)
+GC_NOTIFY_TEMPLATE_ID = env("GC_NOTIFY_TEMPLATE_ID", default=None)
+POWER_AUTOMATE_URL = env("POWER_AUTOMATE_URL", default=None)
 
-GC_NOTIFY_API_KEY = env("GC_NOTIFY_API_KEY")
-GC_NOTIFY_TEMPLATE_ID = env("GC_NOTIFY_TEMPLATE_ID")
-POWER_AUTOMATE_URL = env("POWER_AUTOMATE_URL")
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+# EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+# EMAIL_HOST = "in-v3.mailjet.com"
+# EMAIL_PORT = 587
+# EMAIL_HOST_USER = ""
 
 ROOT_URLCONF = "llmchat.urls"
 

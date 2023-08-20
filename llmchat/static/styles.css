@@ -1036,7 +1036,7 @@ body.highlight-invalid div.phac_aspc_form_autocomplete:has(input:invalid) {
 }
 
 #chat-inputs:focus-within {
-  box-shadow: rgba(0,0,0,0.2) 0 0 8px;
+  box-shadow: rgba(0, 0, 0, 0.2) 0 0 8px;
 }
 
 #chat-form button {
@@ -1110,9 +1110,9 @@ div.message-text :last-child {
 .message-text pre code {
   padding: 10px;
   display: block;
-  border: solid 1px rgba(0,0,0,0.2);
+  border: solid 1px rgba(0, 0, 0, 0.2);
   border-radius: 5px;
-  background: rgba(255,255,255,0.5);
+  background: rgba(255, 255, 255, 0.5);
 }
 
 .typing {

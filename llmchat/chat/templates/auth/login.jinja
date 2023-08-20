@@ -5,7 +5,7 @@
   <div class="container p-0 d-flex justify-content-center"
        id="login-container">
     <div class="col-md-6 col-sm-12">
-        <form action="{{ url("phac_only_login") }}{% if request.GET.next %}?next={{ request.GET.next }}{% endif %}"
+        <form action="{{ url("email_login") }}{% if request.GET.next %}?next={{ request.GET.next }}{% endif %}"
         method="post">
           {% csrf_token %}
           {% if next %}
@@ -35,7 +35,7 @@
                        required
                        id="{{ login_form.email.auto_id }}"
                        class="textinput textInput form-control">
-                <label for="{{ login_form.email.auto_id }}">PHAC email:</label>
+                <label for="{{ login_form.email.auto_id }}">Email:</label>
               </div>
               <div>
                 <input class='btn btn-primary white' type="submit" value="Send a login link to my email" />
