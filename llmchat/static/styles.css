@@ -11,6 +11,7 @@ body {
 }
 
 footer {
+  display: none;
   position: absolute;
   bottom: 3.5rem;
   width: 100%;
@@ -980,7 +981,7 @@ body.highlight-invalid div.phac_aspc_form_autocomplete:has(input:invalid) {
 }
 
 #chat-outer {
-  height: calc(100vh - 8.5rem);
+  height: calc(100vh - 4rem);
   position: fixed;
   width: 100%;
   background: var(--bs-light);
@@ -989,7 +990,7 @@ body.highlight-invalid div.phac_aspc_form_autocomplete:has(input:invalid) {
 #sidebar {
   width: 320px;
   left: 0;
-  height: calc(100vh - 8.5rem);
+  height: calc(100vh - 4rem);
   position: fixed;
 }
 
@@ -1065,7 +1066,7 @@ body.highlight-invalid div.phac_aspc_form_autocomplete:has(input:invalid) {
 }
 
 #messages-container {
-  height: calc(100vh - 16rem);
+  height: calc(100vh - 11rem);
   overflow-y: auto;
   padding-bottom: 0.25rem;
   overflow-x: hidden;
@@ -1133,7 +1134,7 @@ div.message-text :last-child {
   position: absolute;
   left: 0;
   top: 50%;
-  margin-top: -4px;
+  margin-top: -9px;
   border-radius: 50%;
 }
 

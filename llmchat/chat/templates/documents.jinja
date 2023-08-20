@@ -37,7 +37,10 @@
     </div>
     <div class="row">
       <div class="col">
-        <p class="text-muted">Upload a document for question answering. <em>Do not upload protected information.</em></p>
+        <p class="text-muted">
+          Upload a document for question answering.
+          {% if branding.docs_warning %}<em>{{ branding.docs_warning }}</em>{% endif %}
+        </p>
       </div>
     </div>
     <form hx-post="{{ request.path }}"

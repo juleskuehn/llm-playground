@@ -1,15 +1,21 @@
 {% extends 'base.jinja' %}
 {% block content %}
+  {% set messages = chat.message_set.all().order_by('timestamp') %}
   <div id="chat-outer">
     {% include 'fragments/chat_sidebar.jinja' %}
     <div id="chat-container">
       <div class="container">
-        {% set messages = chat.message_set.all().order_by('timestamp') %}
         <div id="messages-container" class="mx-1 pt-3">
           {% if not messages %}
             <div id="no-messages-placeholder" class="text-muted">
-              <p class="text-center">Type a message to start chatting with the large language model (LLM), and press Ctrl+Enter to send.</p>
-              {# <p class="text-center">Do not enter protected information.</p> #}
+              <p class="text-center">
+                Type a message to start chatting with the large language model (LLM), and press Ctrl+Enter to send.
+              </p>
+              {% if branding.chat_warning %}
+                <p class="text-center">
+                  <em>{{ branding.chat_warning }}</em>
+                </p>
+              {% endif %}
             </div>
           {% else %}
             {% include 'fragments/messages.jinja' %}
@@ -39,9 +45,7 @@
       </div>
     </div>
   </div>
-
   {% include 'fragments/chat_settings.jinja' %}
-
   <script>
     (function () {
     const send_button = document.getElementById('send-button');
