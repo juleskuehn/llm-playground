@@ -76,5 +76,37 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
   <!-- and it's easy to individually load additional languages -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/go.min.js"></script>
-  <script>hljs.highlightAll();</script>
+  <script>
+  (function () {
+  document.querySelectorAll(
+    '#messages-container pre code'
+  ).forEach((block) => {
+    hljs.highlightBlock(block);
+    // Add a copy button to the parent <pre> element
+    // Check if there is already a copy button
+    if (block.parentNode.querySelector('.copy-button')) {
+      return;
+    }
+    const copy_button = document.createElement('button');
+    copy_button.className = 'btn btn-outline-secondary btn-sm copy-button';
+    copy_button.innerHTML = '<i class="bi bi-clipboard"></i>';
+    copy_button.addEventListener('click', () => {
+      navigator.clipboard.writeText(block.innerText);
+    });
+    block.parentNode.insertBefore(copy_button, block);
+  });
+  })();
+  // Scroll to the bottom of the messages
+(function () {
+  const messages = document.getElementById("messages-container");
+  if (messages) {
+    messages.scrollTop = messages.scrollHeight;
+  }
+  const message_field = document.getElementById('id_message');
+  if (message_field) {
+    message_field.value = '';
+    message_field.focus();
+  }
+})();
+</script>
 {% endblock content %}

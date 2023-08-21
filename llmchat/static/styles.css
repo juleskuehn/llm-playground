@@ -1325,3 +1325,22 @@ div.spinner-border.htmx-request {
 div.pre-line {
   white-space: pre-line;
 }
+
+pre .copy-button {
+  float: right;
+  margin-left: -50px;
+  border-color: transparent;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+pre:hover .copy-button,
+.copy-button:focus {
+  opacity: 1;
+}
+
+pre .copy-button:hover {
+  background: transparent;
+  color: black;
+  border-color: transparent;
+}
