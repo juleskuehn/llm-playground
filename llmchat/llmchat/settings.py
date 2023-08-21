@@ -122,7 +122,7 @@ MAGICLINK_REQUIRE_SIGNUP = False
 MAGICLINK_TOKEN_USES = 3  # M365 "clicks" links to check them, so must be > 1
 MAGICLINK_REQUIRE_SAME_IP = False  # Otherwise M365 checks will invalidate token
 MAGICLINK_REQUIRE_SAME_BROWSER = False  # As above
-MAGICLINK_METHOD = "django_smtp"
+MAGICLINK_METHOD = env("MAGICLINK_METHOD", default="django_smtp")
 ALLOWED_EMAIL_DOMAINS = env.list("ALLOWED_EMAIL_DOMAINS", default=["*"])
 GC_NOTIFY_API_KEY = env("GC_NOTIFY_API_KEY", default=None)
 GC_NOTIFY_TEMPLATE_ID = env("GC_NOTIFY_TEMPLATE_ID", default=None)
@@ -147,9 +147,15 @@ TEMPLATES = [
                 "str": str,
                 "list": list,
                 "branding": {
-                    "name": "PHAC LLM Playground",
-                    "chat_warning": "This system is under active development. Do not enter protected information.",
-                    "docs_warning": "Do not upload protected information.",
+                    "name": f"{env('BRAND_NAME', default='')} LLM Playground".strip(),
+                    "chat_warning": env(
+                        "BRAND_CHAT_WARNING",
+                        default="This system is under active development. Do not enter protected information.",
+                    ),
+                    "docs_warning": env(
+                        "BRAND_DOCS_WARNING",
+                        default="Do not upload protected information.",
+                    ),
                 },
             },
         },
@@ -254,5 +260,3 @@ CHAT_SYSTEM_PROMPT = """You are a helpful general purpose AI who responds in Mar
 You respond to user queries correctly and harmlessly.
 You always reason step by step to ensure you get the correct answer, \
 and ask for clarification when you need it."""
-
-BRANDING = {}
