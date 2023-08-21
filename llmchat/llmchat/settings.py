@@ -156,6 +156,10 @@ TEMPLATES = [
                         "BRAND_DOCS_WARNING",
                         default="Do not upload protected information.",
                     ),
+                    "login_message": env(
+                        "BRAND_LOGIN_MESSAGE",
+                        default="Login or create an account",
+                    ),
                 },
             },
         },
