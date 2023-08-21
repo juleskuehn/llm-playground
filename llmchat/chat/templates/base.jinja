@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    {% block title %}<title>LLM playground</title>{% endblock title %}
+    {% block title %}<title>{{ branding.name }}</title>{% endblock title %}
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="{{ static('thirdparty/htmx.min.js') }}"></script>
@@ -24,7 +24,7 @@
         <h1 class="nav-header">
           <a href="{{ url("index") }}" class="text-reset text-decoration-none">
             {% block nav_header_text %}
-              PHAC LLM playground
+              {{ branding.name }}
             {% endblock nav_header_text %}
           </a>
         </h1>
@@ -120,7 +120,7 @@
               <a href="#" data-bs-toggle="modal" data-bs-target="#terms-modal">{{ _("terms_and_conditions") }}</a>
             </li> #}
             <li class="list-inline-item">
-              <a href="mailto:datascience-sciencedesdonnees@phac-aspc.gc.ca?subject=LLM%20playground%20application">
+              <a href="#">
                 Issues? Email dev team
               </a>
             </li>

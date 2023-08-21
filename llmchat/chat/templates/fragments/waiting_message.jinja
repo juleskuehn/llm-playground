@@ -9,10 +9,10 @@
        hx-swap="outerHTML"
        hx-trigger="load"></div>
 {% else %}
-<script>
+  <script>
   document.getElementById('send-button').disabled = false;
   document.getElementById('id_message').disabled = false;
-</script>
+  </script>
 {% endif %}
 {% if add_chat_title %}
   {% set current = True %}
@@ -34,8 +34,25 @@
   </li>
 {% endif %}
 <script>
-// Scroll to the bottom of the messages
 (function () {
+  document.querySelectorAll(
+    '#messages-container pre code'
+  ).forEach((block) => {
+    hljs.highlightBlock(block);
+    // Add a copy button to the parent <pre> element
+    // Check if there is already a copy button
+    if (block.parentNode.querySelector('.copy-button')) {
+      return;
+    }
+    const copy_button = document.createElement('button');
+    copy_button.className = 'btn btn-outline-secondary btn-sm copy-button';
+    copy_button.innerHTML = '<i class="bi bi-clipboard"></i>';
+    copy_button.addEventListener('click', () => {
+      navigator.clipboard.writeText(block.innerText);
+    });
+    block.parentNode.insertBefore(copy_button, block);
+  });
+  // Scroll to the bottom of the messages
   const messages = document.getElementById("messages-container");
   if (messages) {
     messages.scrollTop = messages.scrollHeight;
