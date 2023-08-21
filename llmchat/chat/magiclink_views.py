@@ -46,7 +46,7 @@ class EmailLoginView(Login):
             "*" in ALLOWED_EMAIL_DOMAINS
             or email.split("@")[-1] in ALLOWED_EMAIL_DOMAINS
         ):
-            form.add_error("email", f"Email must end in {ALLOWED_EMAIL_DOMAINS}")
+            form.add_error("email", f"Email must end in {' | '.join(ALLOWED_EMAIL_DOMAINS)}")
             context["login_form"] = form
             return self.render_to_response(context)
 
