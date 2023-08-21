@@ -65,10 +65,6 @@ class Document(models.Model):
 
     def __str__(self):
         return f"Document {self.id}: {self.original_filename}"
-    
-    @property
-    def name(self):
-        return self.file.name.split('/')[-1]
 
 
 class DocumentChunk(models.Model):

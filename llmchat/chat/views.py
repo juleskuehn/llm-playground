@@ -7,6 +7,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.files.storage import default_storage
 
 from chat.forms import MessageForm, UploadForm, QueryForm, QAForm, SettingsForm
 from chat.models import Message, User, Chat, DocumentChunk, Document, UserSettings
@@ -249,6 +250,7 @@ class DocumentsView(LoginRequiredMixin, TemplateView):
     def delete(self, request, *args, **kwargs):
         document = Document.objects.get(id=kwargs["doc_id"])
         if document.user == request.user:
+            default_storage.delete(document.file.name)
             document.delete()
             return HttpResponse(status=200)
         else:
@@ -271,9 +273,9 @@ class DocumentsView(LoginRequiredMixin, TemplateView):
             os.unlink(temp_file.name)
             text = "\n\n".join([doc.page_content for doc in docs])
             # Delete any existing documents with the same original_filename
-            Document.objects.filter(
-                user=request.user, original_filename=uploaded_file.name
-            ).delete()
+            # Document.objects.filter(
+            #     user=request.user, original_filename=uploaded_file.name
+            # ).delete()
             instance = Document(
                 file=uploaded_file,
                 user=request.user,
@@ -295,7 +297,7 @@ class DocumentsView(LoginRequiredMixin, TemplateView):
 
 
 def summary(request, doc_id):
-    doc = Document.objects.filter(id=doc_id).first()
+    doc = Document.objects.get(id=doc_id)
     title = generate_title(doc)
     summary = summarize(doc)
     # Add the document filename to the summary for embedding
@@ -306,13 +308,8 @@ def summary(request, doc_id):
         title=title,
         summary_embedding=summary_embedding,
     )
-    return HttpResponse(
-        f"""
-        <div class='fw-semibold'>{title}</div>
-        <div class='pre-line'>{summary.strip()}</div>
-        <script>document.getElementById("generate-embeddings-doc{ doc.id }").click();</script>
-    """
-    )
+    doc = Document.objects.get(id=doc_id)
+    return render(request, "fragments/summary.jinja", {"doc": doc})
 
 
 def summarize(document):
@@ -341,7 +338,7 @@ def generate_title(document):
 
 def full_text(request, doc_id):
     doc = Document.objects.get(id=doc_id)
-    return HttpResponse("<div class='pre-line'>" + doc.text.strip() + "</div>")
+    return render(request, "fragments/full_text.jinja", {"doc": doc})
 
 
 def generate_embeddings(request, doc_id):

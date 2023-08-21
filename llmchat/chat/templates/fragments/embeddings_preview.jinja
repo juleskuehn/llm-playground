@@ -1,4 +1,4 @@
-<div class="row">
+{# <div class="row">
   <div class="col-3">Document mean:</div>
   <div class="col">
     {{ doc.mean_embedding[:5] }} ...
@@ -19,5 +19,5 @@
     {{ chunk.embedding[:5] }} ...
   </div>
 </div>
-{% endfor %}
-<p>{{ doc.chunks.count() }} chunks total.</p>
+{% endfor %} #}
+<p class="mb-0">{{ doc.chunks.count() }} chunks added to index. This document is now searchable through the Document Q&A.</p>

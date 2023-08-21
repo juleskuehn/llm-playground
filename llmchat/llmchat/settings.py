@@ -210,6 +210,8 @@ STORAGES = {
     },
 }
 GS_BUCKET_NAME = env("GS_BUCKET_NAME")
+GS_BLOB_CHUNK_SIZE = 5 * 1024 * 1024
+GS_FILE_OVERWRITE = False
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
