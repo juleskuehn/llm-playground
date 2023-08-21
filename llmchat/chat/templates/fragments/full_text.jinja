@@ -1,0 +1,6 @@
+<button class="btn btn-sm btn-outline-secondary"
+        type="button"
+        onclick="document.getElementById('full-text-doc-{{doc.id}}').classList.toggle('d-none')">
+Toggle full text
+</button>
+<div class='pre-line' id='full-text-doc-{{doc.id}}'>{{ doc.text.strip() }}</div>

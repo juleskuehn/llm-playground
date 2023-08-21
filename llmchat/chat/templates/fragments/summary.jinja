@@ -1,0 +1,6 @@
+<div class='fw-semibold'>{{ doc.title }}</div>
+<div class='pre-line'>{{ doc.summary.strip() }}</div>
+<script>document.getElementById("generate-embeddings-doc{{ doc.id }}").click();</script>
+<h2 class="accordion-header"
+    id="document-heading-{{ doc.id }}"
+    hx-swap-oob="true">{% include "fragments/document_row_header.jinja" %}</h2>
