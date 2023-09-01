@@ -9,8 +9,9 @@ Some aspects of this repo are based on other PHAC Django projects, e.g. the base
 
 Creating the secret required some fiddling due to org-level settings.
 
-Also the secret came out in UTF-16 and wouldn't decode. Set the SECRET_KEY manually in the gcp.env before running the following commands.
+Also the secret came out in UTF-16 and wouldn't decode. Set the SECRET_KEY manually in the gcp.env before running the following commands. (The first command is optional; use only if you want to replace the existing secret with a new value.)
 ```bash
+gcloud secrets delete django_settings
 gcloud secrets create django_settings --data-file gcp.env --locations=us-east1 --replication-policy=user-managed
 gcloud secrets add-iam-policy-binding django_settings --member serviceAccount:phx-datasciencellm@appspot.gserviceaccount.com --role roles/secretmanager.secretAccessor
 ```
