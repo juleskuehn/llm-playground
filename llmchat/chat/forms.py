@@ -51,7 +51,7 @@ class QAForm(forms.Form):
 class SettingsForm(forms.ModelForm):
     class Meta:
         model = UserSettings
-        fields = ["system_prompt", "model_name", "temperature", "max_output_tokens"]
+        fields = ["system_prompt", "model_name", "temperature", "max_output_tokens", "debug"]
         widgets = {
             "system_prompt": forms.Textarea(
                 attrs={"rows": 5, "cols": 100, "class": "form-control"}
@@ -67,14 +67,15 @@ class SettingsForm(forms.ModelForm):
                     "class": "form-range",
                 }
             ),
-            # Manually enter number of tokens, between 128 and 8192
+            # Manually enter max number of tokens
             "max_output_tokens": forms.NumberInput(
                 attrs={
                     "type": "number",
                     "min": 128,
-                    "max": 2048,
-                    "step": 1,
+                    "max": 32768,
+                    "step": 128,
                     "class": "form-control",
                 }
             ),
+            "debug": forms.CheckboxInput(attrs={"class": "form-check-input"}),
         }

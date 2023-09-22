@@ -74,6 +74,8 @@ def chat_response(request, chat_id):
         is_code_model = "code" in user_settings.model_name
         llm_class = ChatVertexAI if is_chat_model else VertexAI
         max_tokens = 2048 if is_code_model else 1024
+        if "32k" in user_settings.model_name:
+            max_tokens = 32768
         max_tokens = min(max_tokens, user_settings.max_output_tokens)
         llm = llm_class(
             model_name=user_settings.model_name,
@@ -197,6 +199,7 @@ def chat_settings(request):
             user_settings.model_name = form.cleaned_data["model_name"]
             user_settings.max_output_tokens = form.cleaned_data["max_output_tokens"]
             user_settings.temperature = form.cleaned_data["temperature"]
+            user_settings.debug = form.cleaned_data["debug"]
             user_settings.save()
             response = HttpResponse(status=200)
             # Add message to response to be displayed by HTMX
@@ -246,7 +249,7 @@ class DocumentsView(LoginRequiredMixin, TemplateView):
         context["query_form"] = QueryForm()
         context["qa_form"] = QAForm()
         return context
-    
+
     def delete(self, request, *args, **kwargs):
         document = Document.objects.get(id=kwargs["doc_id"])
         if document.user == request.user:
