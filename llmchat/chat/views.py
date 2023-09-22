@@ -82,8 +82,15 @@ def chat_response(request, chat_id):
             max_output_tokens=max_tokens,
             temperature=user_settings.temperature,
         )
+        num_tokens = None
+        if user_settings.debug:
+            if is_chat_model:
+                num_tokens = llm.get_num_tokens_from_messages(chat_messages)
+            else:
+                num_tokens = llm.get_num_tokens(chat_messages)
+        llm_response = llm(chat_messages)
         bot_message = Message.objects.create(
-            message=llm(chat_messages).content if is_chat_model else llm(chat_messages),
+            message=llm_response.content if is_chat_model else llm_response,
             chat_id=chat_id,
             is_bot=True,
         )
@@ -99,10 +106,23 @@ def chat_response(request, chat_id):
         chat.title = summarize_chat(chat_id)
         chat.save()
 
+    context = {
+        "message": bot_message,
+        "add_chat_title": add_chat_title,
+        "chat": chat,
+    }
+
+    if user_settings.debug:
+        context.update(
+            {
+                "num_tokens": num_tokens,
+                "debug": True,
+            }
+        )
     return render(
         request,
         "fragments/waiting_message.jinja",
-        {"message": bot_message, "add_chat_title": add_chat_title, "chat": chat},
+        context,
     )
 
 

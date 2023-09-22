@@ -15,8 +15,21 @@
         {{ message.timestamp.strftime("%Y-%m-%d %H:%M") }}
       {% endif %}
     </span>
+    {% if debug %}
+      <span class="message-debug">
+        Input tokens: {{ num_tokens }}
+      </span>
+    {% endif %}
   </div>
   <div class="message-blob">
-    <div class="message-text">{% if message.typing %}<div class="typing"> <span></span><span></span><span></span></div>{% else %}{{ message.message | markdown | safe }}{% endif %}</div>
+    <div class="message-text">
+      {% if message.typing %}
+        <div class="typing"> <span></span><span></span><span></span></div>
+      {% elif message.is_bot %}
+        {{ message.message | markdown | safe }}
+      {% else %}
+        {{ message.message }}
+      {% endif %}
+    </div>
   </div>
 </div>

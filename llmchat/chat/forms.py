@@ -72,7 +72,7 @@ class SettingsForm(forms.ModelForm):
                 attrs={
                     "type": "number",
                     "min": 128,
-                    "max": 32768,
+                    "max": 8192,
                     "step": 128,
                     "class": "form-control",
                 }
