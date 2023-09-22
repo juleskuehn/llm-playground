@@ -75,7 +75,7 @@ def chat_response(request, chat_id):
         llm_class = ChatVertexAI if is_chat_model else VertexAI
         max_tokens = 2048 if is_code_model else 1024
         if "32k" in user_settings.model_name:
-            max_tokens = 32768
+            max_tokens = 8192  # Not sure why this is imposed, but it is
         max_tokens = min(max_tokens, user_settings.max_output_tokens)
         llm = llm_class(
             model_name=user_settings.model_name,
