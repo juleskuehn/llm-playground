@@ -101,8 +101,13 @@ class UserSettings(models.Model):
             ("codechat-bison", "Google PaLM codechat-bison"),
             ("text-bison", "Google PaLM text-bison"),
             ("code-bison", "Google PaLM code-bison"),
+            ("chat-bison-32k", "Google PaLM chat-bison 32k"),
+            ("codechat-bison-32k", "Google PaLM codechat-bison 32k"),
+            ("text-bison-32k", "Google PaLM text-bison 32k"),
+            ("code-bison-32k", "Google PaLM code-bison 32k"),
         ],
     )
     system_prompt = models.TextField(null=True, blank=True)
-    max_output_tokens = models.IntegerField(default=1024)
-    temperature = models.FloatField(default=0)
+    max_output_tokens = models.IntegerField(default=2048)
+    temperature = models.FloatField(default=0.1)
+    debug = models.BooleanField(default=False)
