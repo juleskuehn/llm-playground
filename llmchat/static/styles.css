@@ -1357,3 +1357,7 @@ pre .copy-button:hover {
   color: black;
   border-color: transparent;
 }
+
+span.message-debug {
+  float: right;
+}

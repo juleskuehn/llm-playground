@@ -74,14 +74,23 @@ def chat_response(request, chat_id):
         is_code_model = "code" in user_settings.model_name
         llm_class = ChatVertexAI if is_chat_model else VertexAI
         max_tokens = 2048 if is_code_model else 1024
+        if "32k" in user_settings.model_name:
+            max_tokens = 8192  # Not sure why this is imposed, but it is
         max_tokens = min(max_tokens, user_settings.max_output_tokens)
         llm = llm_class(
             model_name=user_settings.model_name,
             max_output_tokens=max_tokens,
             temperature=user_settings.temperature,
         )
+        num_tokens = None
+        if user_settings.debug:
+            if is_chat_model:
+                num_tokens = llm.get_num_tokens_from_messages(chat_messages)
+            else:
+                num_tokens = llm.get_num_tokens(chat_messages)
+        llm_response = llm(chat_messages)
         bot_message = Message.objects.create(
-            message=llm(chat_messages).content if is_chat_model else llm(chat_messages),
+            message=llm_response.content if is_chat_model else llm_response,
             chat_id=chat_id,
             is_bot=True,
         )
@@ -97,10 +106,23 @@ def chat_response(request, chat_id):
         chat.title = summarize_chat(chat_id)
         chat.save()
 
+    context = {
+        "message": bot_message,
+        "add_chat_title": add_chat_title,
+        "chat": chat,
+    }
+
+    if user_settings.debug:
+        context.update(
+            {
+                "num_tokens": num_tokens,
+                "debug": True,
+            }
+        )
     return render(
         request,
         "fragments/waiting_message.jinja",
-        {"message": bot_message, "add_chat_title": add_chat_title, "chat": chat},
+        context,
     )
 
 
@@ -197,6 +219,7 @@ def chat_settings(request):
             user_settings.model_name = form.cleaned_data["model_name"]
             user_settings.max_output_tokens = form.cleaned_data["max_output_tokens"]
             user_settings.temperature = form.cleaned_data["temperature"]
+            user_settings.debug = form.cleaned_data["debug"]
             user_settings.save()
             response = HttpResponse(status=200)
             # Add message to response to be displayed by HTMX
@@ -246,7 +269,7 @@ class DocumentsView(LoginRequiredMixin, TemplateView):
         context["query_form"] = QueryForm()
         context["qa_form"] = QAForm()
         return context
-    
+
     def delete(self, request, *args, **kwargs):
         document = Document.objects.get(id=kwargs["doc_id"])
         if document.user == request.user:
